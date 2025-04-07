@@ -28,12 +28,25 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
+                console.log('Attempting to sign up with email:', email);
+                
                 const { data, error } = await supabase.auth.signUp({
                     email,
                     password,
+                    options: {
+                        emailRedirectTo: window.location.origin + '/login.html',
+                        data: {
+                            email: email,
+                        }
+                    }
                 });
 
-                if (error) throw error;
+                if (error) {
+                    console.error('Signup error:', error);
+                    throw error;
+                }
+
+                console.log('Signup successful:', data);
 
                 if (messageDiv) {
                     messageDiv.textContent = 'Registration successful! Please check your email to verify your account.';
@@ -49,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 3000);
 
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Registration error:', error);
                 if (messageDiv) {
                     messageDiv.textContent = error.message || 'Error during registration. Please try again.';
                     messageDiv.className = 'error';
