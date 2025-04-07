@@ -4,9 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('acceptInviteForm');
     const messageDiv = document.getElementById('message');
 
-    // Get the token from the URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
+    // Get the stored token
+    const token = localStorage.getItem('supabase.auth.token');
 
     if (!token) {
         messageDiv.textContent = 'Invalid invitation link. Please contact support.';
@@ -27,12 +26,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            // Update the user's password using the invitation token
+            // Set the session with the token
+            const { data: { session }, error: sessionError } = await supabase.auth.setSession({
+                access_token: token,
+                refresh_token: localStorage.getItem('supabase.auth.refresh_token')
+            });
+
+            if (sessionError) throw sessionError;
+
+            // Update the user's password
             const { data, error } = await supabase.auth.updateUser({
                 password: password
             });
 
             if (error) throw error;
+
+            // Clear the stored token
+            localStorage.removeItem('supabase.auth.token');
+            localStorage.removeItem('supabase.auth.refresh_token');
 
             messageDiv.textContent = 'Password set successfully! Redirecting to login...';
             messageDiv.className = 'success';
