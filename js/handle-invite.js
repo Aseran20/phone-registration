@@ -21,8 +21,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         localStorage.setItem('supabase.auth.refresh_token', params.get('refresh_token'));
         
         console.log('Redirecting to accept-invite page...');
-        // Redirect to the accept-invite page
-        window.location.replace('/accept-invite.html');
+        // Redirect to the accept-invite page using the full path
+        window.location.href = 'accept-invite.html';
     } else {
         console.log('No valid invitation token found');
     }
