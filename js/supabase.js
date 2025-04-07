@@ -1,8 +1,8 @@
 // Initialize Supabase client
-const supabaseUrl = 'https://kqnylriexuhpryqebhsz.supabase.co'
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxbnlscmlleHVocHJ5cWViaHN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwNTc4NjksImV4cCI6MjA1OTYzMzg2OX0.YfaUPRQxtPtpKeazYFi9oNTBlmb46rDnvbPUN4UMqDw'
+const supabaseUrl = 'https://kqnylrieuxhprqehbsz.supabase.co'
+const supabaseKey = 'YOUR_SUPABASE_ANON_KEY' // Replace with your actual anon key
 
-const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
 
 // Export the client for use in other files
 export { supabase } 

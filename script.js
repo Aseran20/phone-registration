@@ -1,3 +1,5 @@
+import { supabase } from './js/supabase.js';
+
 // Function to format date
 function formatDate(dateString) {
     return new Date(dateString).toLocaleString();
@@ -5,19 +7,29 @@ function formatDate(dateString) {
 
 // Function to load phone numbers
 async function loadPhoneNumbers() {
+    const phoneList = document.getElementById('phoneList');
+
+    if (!phoneList) return;
+
     try {
-        const response = await fetch('/api/phones');
-        const phones = await response.json();
-        
-        const phoneList = document.getElementById('phoneList');
-        phoneList.innerHTML = phones.map(phone => `
+        const { data, error } = await supabase
+            .from('phone_numbers')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        phoneList.innerHTML = data.map(phone => `
             <div class="phone-item">
                 <span class="phone-number">${phone.phone_number}</span>
-                <span class="phone-date">${formatDate(phone.created_at)}</span>
+                <span class="phone-date">${new Date(phone.created_at).toLocaleDateString()}</span>
             </div>
         `).join('');
     } catch (error) {
         console.error('Error loading phone numbers:', error);
+        if (phoneList) {
+            phoneList.innerHTML = '<div class="error">Error loading phone numbers</div>';
+        }
     }
 }
 
@@ -32,28 +44,25 @@ document.getElementById('phoneForm').addEventListener('submit', async (e) => {
     const messageDiv = document.getElementById('message');
     
     try {
-        const response = await fetch('/api/save-phone', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ phone })
-        });
-        
-        const data = await response.json();
-        
-        if (response.ok) {
-            messageDiv.textContent = 'Phone number saved successfully!';
+        const { data, error } = await supabase
+            .from('phone_numbers')
+            .insert([{ phone_number: phone }]);
+
+        if (error) throw error;
+
+        if (messageDiv) {
+            messageDiv.textContent = 'Phone number registered successfully!';
             messageDiv.className = 'success';
-            document.getElementById('phone').value = '';
-            // Reload the phone numbers list
-            loadPhoneNumbers();
-        } else {
-            throw new Error(data.message || 'Failed to save phone number');
         }
+        
+        if (document.getElementById('phone')) document.getElementById('phone').value = '';
+        await loadPhoneNumbers();
     } catch (error) {
-        messageDiv.textContent = error.message;
-        messageDiv.className = 'error';
+        console.error('Error:', error);
+        if (messageDiv) {
+            messageDiv.textContent = 'Error registering phone number. Please try again.';
+            messageDiv.className = 'error';
+        }
     }
 });
 
