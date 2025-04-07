@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sendo Swiss</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">Sendo Swiss</div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active">
+                        <a href="#overview"><i class="fas fa-home"></i> Overview</a>
+                    </li>
+                    <li>
+                        <a href="#customers"><i class="fas fa-users"></i> Customers</a>
+                    </li>
+                    <li>
+                        <a href="#campaigns"><i class="fas fa-bullhorn"></i> Campaigns</a>
+                    </li>
+                    <li>
+                        <a href="#analytics"><i class="fas fa-chart-bar"></i> Analytics</a>
+                    </li>
+                    <li>
+                        <a href="#settings"><i class="fas fa-cog"></i> Settings</a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </aside>
+        
+        <main class="dashboard-main">
+            <header class="dashboard-header">
+                <div class="header-search">
+                    <input type="text" placeholder="Search...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="header-user">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <span id="userEmail">user@example.com</span>
+                        <div class="avatar">U</div>
+                    </div>
+                </div>
+            </header>
+            
+            <div class="dashboard-content">
+                <div class="dashboard-welcome">
+                    <h1>Welcome to your Sendo Swiss Dashboard</h1>
+                    <p>Here's an overview of your customer engagement metrics</p>
+                </div>
+                
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Total Customers</h3>
+                            <p class="stat-value">1,248</p>
+                            <p class="stat-change positive">+12% from last month</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Active Campaigns</h3>
+                            <p class="stat-value">5</p>
+                            <p class="stat-change">3 ending soon</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Engagement Rate</h3>
+                            <p class="stat-value">68%</p>
+                            <p class="stat-change positive">+5% from last month</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-coffee"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Redemptions</h3>
+                            <p class="stat-value">342</p>
+                            <p class="stat-change positive">+18% from last month</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-charts">
+                    <div class="chart-container">
+                        <h2>Customer Growth</h2>
+                        <div class="chart-placeholder">
+                            <p>Chart will be displayed here</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h2>Campaign Performance</h2>
+                        <div class="chart-placeholder">
+                            <p>Chart will be displayed here</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="recent-activity">
+                    <h2>Recent Activity</h2>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="activity-details">
+                                <h4>New Customer Registration</h4>
+                                <p>John Doe registered via QR code</p>
+                                <span class="activity-time">2 hours ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <div class="activity-details">
+                                <h4>Campaign Sent</h4>
+                                <p>"Weekend Special" sent to 245 customers</p>
+                                <span class="activity-time">5 hours ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-coffee"></i>
+                            </div>
+                            <div class="activity-details">
+                                <h4>Offer Redeemed</h4>
+                                <p>Sarah redeemed "Buy 1 Get 1 Free" offer</p>
+                                <span class="activity-time">Yesterday</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html> 

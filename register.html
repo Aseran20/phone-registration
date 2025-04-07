@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Sendo Swiss</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Sendo Swiss</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="register.html" class="active">Register</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="form-card">
+            <h1>Phone Number Registration</h1>
+            <form id="phoneForm">
+                <div class="form-group">
+                    <label for="phone">Phone Number:</label>
+                    <input type="tel" id="phone" name="phone" required 
+                           pattern="[0-9]{10}" 
+                           placeholder="Enter 10-digit phone number">
+                </div>
+                <button type="submit" class="cta-button">Submit</button>
+            </form>
+            <div id="message"></div>
+        </div>
+        
+        <div class="list-card">
+            <h2>Registered Phone Numbers</h2>
+            <div id="phoneList"></div>
+        </div>
+    </div>
+
+    <script src="register.js"></script>
+</body>
+</html> 

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accept Invitation - Sendo Swiss</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">Sendo Swiss</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="form-card login-card">
+            <h2>Set Your Password</h2>
+            <form id="acceptInviteForm">
+                <div class="form-group">
+                    <label for="password">New Password</label>
+                    <input type="password" id="password" name="password" required 
+                           minlength="6" placeholder="Enter your new password">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required 
+                           minlength="6" placeholder="Confirm your new password">
+                </div>
+                <button type="submit" class="btn btn-primary">Set Password</button>
+                <div id="message" class="message"></div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="js/accept-invite.js"></script>
+</body>
+</html> 
