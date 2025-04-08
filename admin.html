@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phone Registration</title>
+    <title>Admin Panel - Phone Registration</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- QR Code library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
     <!-- Firebase SDK -->
     <script type="module">
         // Import the functions you need from the SDKs you need
@@ -25,26 +27,26 @@
     </nav>
 
     <div class="container">
-        <div id="shop-info">
-            <!-- Shop information will be loaded here -->
-        </div>
+        <div class="admin-panel">
+            <h2>Admin Panel</h2>
+            
+            <div class="registration-link-container">
+                <h3>Registration Link</h3>
+                <input type="text" id="registrationLink" readonly>
+                <button class="copy-button" onclick="copyRegistrationLink()">Copy Link</button>
+            </div>
 
-        <div class="registration-form">
-            <h2>Register Your Phone Number</h2>
-            <form id="phoneForm">
-                <div class="form-group">
-                    <label for="phone">Phone Number:</label>
-                    <input type="tel" id="phone" name="phone" required 
-                           placeholder="Enter your phone number">
+            <div class="qr-code-container">
+                <h3>QR Code</h3>
+                <canvas id="qrCode"></canvas>
+                <button class="download-button" onclick="downloadQRCode()">Download QR Code</button>
+            </div>
+
+            <div class="phone-list-container">
+                <h3>Registered Phone Numbers</h3>
+                <div id="phoneList">
+                    <!-- Phone numbers will be loaded here -->
                 </div>
-                <button type="submit" class="submit-button">Register</button>
-            </form>
-        </div>
-
-        <div class="phone-list">
-            <h3>Registered Numbers</h3>
-            <div id="phoneList">
-                <!-- Phone numbers will be loaded here -->
             </div>
         </div>
     </div>
@@ -54,6 +56,6 @@
     <!-- Load scripts -->
     <script type="module" src="js/debug.js"></script>
     <script type="module" src="js/firebase.js"></script>
-    <script type="module" src="js/script.js"></script>
+    <script type="module" src="js/admin.js"></script>
 </body>
 </html> 

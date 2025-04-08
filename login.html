@@ -11,6 +11,7 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <nav>
@@ -26,8 +27,8 @@
 
     <div class="container">
         <div class="form-card">
-            <h1>Login</h1>
-            <form id="loginForm">
+            <h1>Login to Your Account</h1>
+            <form id="login-form">
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input type="email" id="email" required>
@@ -36,11 +37,9 @@
                     <label for="password">Password</label>
                     <input type="password" id="password" required>
                 </div>
-                <div class="form-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="rememberMe">
-                        Remember me
-                    </label>
+                <div class="form-group checkbox">
+                    <input type="checkbox" id="remember">
+                    <label for="remember">Remember me</label>
                 </div>
                 <button type="submit" class="btn-primary">Login</button>
             </form>

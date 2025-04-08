@@ -1,53 +1,71 @@
-import { supabase } from './supabase.js';
-import debug from './debug.js';
+import { auth, db } from './firebase-config.js';
+import { debug, debugError, debugInfo } from './debug.js';
 
-debug.info('Login script loaded');
+debug('Login script loaded');
 
-// Check if user is already logged in
-const { data: { session } } = await supabase.auth.getSession();
-if (session) {
-    debug.info('User already logged in, redirecting to dashboard');
-    window.location.href = '/dashboard.html';
-}
+document.addEventListener('DOMContentLoaded', () => {
+    // Check if user is already logged in
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            debugInfo('User already logged in, redirecting to dashboard');
+            
+            // Check if user is a coffee shop
+            const shopSnapshot = await db.collection('coffee_shops')
+                .where('userId', '==', user.uid)
+                .get();
+                
+            if (!shopSnapshot.empty) {
+                window.location.href = '/coffee-shop-dashboard.html';
+            } else {
+                window.location.href = '/dashboard.html';
+            }
+        }
+    });
 
-// Handle form submission
-const form = document.getElementById('login-form');
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    debug.info('Form submitted');
+    // Handle form submission
+    const form = document.getElementById('login-form');
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            debugInfo('Form submitted');
 
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const rememberMe = document.getElementById('remember').checked;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('remember')?.checked || false;
 
-    try {
-        debug.info('Attempting to sign in');
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password
+            try {
+                debugInfo('Attempting to sign in');
+                
+                // Sign in with Firebase
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                
+                // Check if user is a coffee shop
+                const shopSnapshot = await db.collection('coffee_shops')
+                    .where('userId', '==', userCredential.user.uid)
+                    .get();
+                
+                debugInfo('Login successful');
+                
+                // Redirect based on user type
+                if (!shopSnapshot.empty) {
+                    window.location.href = '/coffee-shop-dashboard.html';
+                } else {
+                    window.location.href = '/dashboard.html';
+                }
+            } catch (error) {
+                debugError('Login error', error);
+                let errorMessage = 'Error during login. Please try again.';
+                
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    errorMessage = 'Invalid email or password.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Invalid email address.';
+                } else if (error.code === 'auth/user-disabled') {
+                    errorMessage = 'This account has been disabled.';
+                }
+                
+                alert(errorMessage);
+            }
         });
-
-        if (error) {
-            debug.error('Login error:', error);
-            alert(error.message);
-            return;
-        }
-
-        debug.info('Login successful');
-        
-        // Store session based on remember me preference
-        if (rememberMe) {
-            debug.info('Storing session in localStorage');
-            localStorage.setItem('supabase.auth.token', JSON.stringify(data.session));
-        } else {
-            debug.info('Storing session in sessionStorage');
-            sessionStorage.setItem('supabase.auth.token', JSON.stringify(data.session));
-        }
-
-        // Redirect to dashboard
-        window.location.href = '/dashboard.html';
-    } catch (error) {
-        debug.error('Unexpected error:', error);
-        alert('An unexpected error occurred. Please try again.');
     }
 });
