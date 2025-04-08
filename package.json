@@ -1,19 +1,17 @@
 {
   "name": "phone-registration",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Phone registration system with Firebase authentication",
+  "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "live-server --port=3000 --no-browser",
+    "dev": "live-server --port=3000"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "@supabase/supabase-js": "^2.49.4",
-    "body-parser": "^2.2.0",
-    "dotenv": "^16.4.7",
-    "express": "^5.1.0",
-    "sqlite3": "^5.1.7"
+    "firebase": "^10.14.1"
   }
 }

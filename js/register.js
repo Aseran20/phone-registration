@@ -1,4 +1,4 @@
-import { supabase } from './supabase.js';
+import { auth } from './firebase-config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('registerForm');
@@ -28,25 +28,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                console.log('Attempting to sign up with email:', email);
+                console.log('Attempting to create account with email:', email);
                 
-                const { data, error } = await supabase.auth.signUp({
-                    email,
-                    password,
-                    options: {
-                        emailRedirectTo: window.location.origin + '/login.html',
-                        data: {
-                            email: email,
-                        }
-                    }
-                });
-
-                if (error) {
-                    console.error('Signup error:', error);
-                    throw error;
-                }
-
-                console.log('Signup successful:', data);
+                // Create user with email and password
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                
+                // Send email verification
+                await userCredential.user.sendEmailVerification();
+                
+                console.log('Account created successfully:', userCredential.user);
 
                 if (messageDiv) {
                     messageDiv.textContent = 'Registration successful! Please check your email to verify your account.';
@@ -64,10 +54,28 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 console.error('Registration error:', error);
                 if (messageDiv) {
-                    messageDiv.textContent = error.message || 'Error during registration. Please try again.';
+                    let errorMessage = 'Error during registration. Please try again.';
+                    
+                    // Handle specific Firebase error codes
+                    switch (error.code) {
+                        case 'auth/email-already-in-use':
+                            errorMessage = 'This email is already registered. Please login instead.';
+                            break;
+                        case 'auth/invalid-email':
+                            errorMessage = 'Please enter a valid email address.';
+                            break;
+                        case 'auth/operation-not-allowed':
+                            errorMessage = 'Email/password accounts are not enabled. Please contact support.';
+                            break;
+                        case 'auth/weak-password':
+                            errorMessage = 'Please choose a stronger password.';
+                            break;
+                    }
+                    
+                    messageDiv.textContent = errorMessage;
                     messageDiv.className = 'error';
                 }
             }
         });
     }
-}); 
+});

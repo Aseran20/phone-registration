@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Phone - Sendo Swiss</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    </script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">Sendo Swiss</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="phone-registration-form">
+            <h2>Register Your Phone</h2>
+            <form id="phoneForm">
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+                </div>
+                <button type="submit" class="btn-primary">Register</button>
+            </form>
+            <div id="message" class="message"></div>
+            <div id="phoneList" class="phone-list"></div>
+        </div>
+    </div>
+
+    <!-- Debug Panel will be injected by debug.js -->
+
+    <!-- Load scripts -->
+    <script type="module" src="js/debug.js"></script>
+    <script type="module" src="js/firebase.js"></script>
+    <script type="module" src="js/script.js"></script>
+</body>
+</html> 

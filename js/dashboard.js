@@ -1,53 +1,54 @@
 import { supabase } from './supabase.js';
+import debug from './debug.js';
 
-document.addEventListener('DOMContentLoaded', async () => {
-    // Check if user is authenticated
-    const { data: { session }, error } = await supabase.auth.getSession();
-    
-    if (!session) {
-        window.location.href = 'login.html';
-        return;
-    }
+debug.info('Dashboard script loaded');
 
-    // Set user email in the dashboard
-    const userEmail = session.user.email;
-    document.querySelector('.user-profile span').textContent = userEmail;
-    document.querySelector('.avatar').textContent = userEmail.charAt(0).toUpperCase();
+// Check if user is logged in
+const { data: { session } } = await supabase.auth.getSession();
+if (!session) {
+    debug.warn('No active session found, redirecting to login');
+    window.location.href = '/login.html';
+}
 
-    // Handle logout
-    document.querySelector('.sidebar-footer a').addEventListener('click', async (e) => {
-        e.preventDefault();
-        
+// Set user email and avatar
+const userEmail = session.user.email;
+debug.info('Setting user email:', userEmail);
+document.getElementById('user-email').textContent = userEmail;
+document.getElementById('user-avatar').textContent = userEmail[0].toUpperCase();
+
+// Handle logout
+const logoutButton = document.getElementById('logout-button');
+logoutButton.addEventListener('click', async () => {
+    debug.info('Logout initiated');
+    try {
         const { error } = await supabase.auth.signOut();
         if (error) {
-            console.error('Error signing out:', error.message);
+            debug.error('Logout error:', error);
+            alert('Error logging out. Please try again.');
             return;
         }
+        debug.info('Logout successful');
+        window.location.href = '/login.html';
+    } catch (error) {
+        debug.error('Unexpected error during logout:', error);
+        alert('An unexpected error occurred during logout.');
+    }
+});
 
-        // Clear stored session
-        localStorage.removeItem('supabase.auth.token');
-        sessionStorage.removeItem('supabase.auth.token');
+// Handle sidebar navigation
+const sidebarLinks = document.querySelectorAll('.sidebar-link');
+sidebarLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const section = link.getAttribute('data-section');
+        debug.info('Navigating to section:', section);
         
-        // Redirect to login page
-        window.location.href = 'login.html';
-    });
-
-    // Handle sidebar navigation
-    const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
-    sidebarLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            // Remove active class from all links
-            sidebarLinks.forEach(l => l.parentElement.classList.remove('active'));
-            
-            // Add active class to clicked link
-            link.parentElement.classList.add('active');
-            
-            // Update content based on selected section
-            const section = link.getAttribute('href').replace('#', '');
-            updateDashboardContent(section);
-        });
+        // Update active link
+        sidebarLinks.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        
+        // Show section content (placeholder for now)
+        alert(`Navigating to ${section} section`);
     });
 });
 

@@ -1,46 +1,53 @@
 import { supabase } from './supabase.js';
+import debug from './debug.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-    const loginForm = document.getElementById('loginForm');
-    const messageDiv = document.getElementById('message');
-    const rememberCheckbox = document.getElementById('remember');
+debug.info('Login script loaded');
 
-    loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const remember = rememberCheckbox.checked;
+// Check if user is already logged in
+const { data: { session } } = await supabase.auth.getSession();
+if (session) {
+    debug.info('User already logged in, redirecting to dashboard');
+    window.location.href = '/dashboard.html';
+}
 
-        try {
-            // Attempt to sign in with Supabase
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email,
-                password
-            });
+// Handle form submission
+const form = document.getElementById('login-form');
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    debug.info('Form submitted');
 
-            if (error) throw error;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const rememberMe = document.getElementById('remember').checked;
 
-            // Store the session
-            if (remember) {
-                localStorage.setItem('supabase.auth.token', data.session.access_token);
-            } else {
-                sessionStorage.setItem('supabase.auth.token', data.session.access_token);
-            }
+    try {
+        debug.info('Attempting to sign in');
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
 
-            // Show success message
-            messageDiv.textContent = 'Login successful! Redirecting to dashboard...';
-            messageDiv.className = 'success';
-
-            // Redirect to dashboard
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 1500);
-
-        } catch (error) {
-            console.error('Error:', error.message);
-            messageDiv.textContent = error.message;
-            messageDiv.className = 'error';
+        if (error) {
+            debug.error('Login error:', error);
+            alert(error.message);
+            return;
         }
-    });
-}); 
+
+        debug.info('Login successful');
+        
+        // Store session based on remember me preference
+        if (rememberMe) {
+            debug.info('Storing session in localStorage');
+            localStorage.setItem('supabase.auth.token', JSON.stringify(data.session));
+        } else {
+            debug.info('Storing session in sessionStorage');
+            sessionStorage.setItem('supabase.auth.token', JSON.stringify(data.session));
+        }
+
+        // Redirect to dashboard
+        window.location.href = '/dashboard.html';
+    } catch (error) {
+        debug.error('Unexpected error:', error);
+        alert('An unexpected error occurred. Please try again.');
+    }
+});
