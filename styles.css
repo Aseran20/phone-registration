@@ -734,23 +734,24 @@ footer {
 /* Password Strength Indicator */
 .password-strength {
     margin-top: 0.5rem;
-    background: var(--light-background);
-    border-radius: 0.25rem;
+    height: 4px;
+    background-color: #e5e7eb;
+    border-radius: 2px;
     overflow: hidden;
+    position: relative;
 }
 
 .strength-bar {
-    height: 4px;
+    height: 100%;
     width: 0;
-    background-color: var(--error-color);
-    transition: all 0.3s;
+    transition: width 0.3s ease, background-color 0.3s ease;
 }
 
 .strength-text {
     display: block;
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     color: var(--light-text);
-    padding: 0.25rem 0.5rem;
+    margin-top: 0.25rem;
 }
 
 /* Checkbox Styles */
