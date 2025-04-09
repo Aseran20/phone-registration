@@ -1,134 +1,286 @@
-import { auth, db } from './firebase-config.js';
+// Import Firebase modules
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getFirestore, collection, getDocs, query, where, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { debug, debugError, debugWarn, debugInfo } from './debug.js';
-import { collection, getDocs, query, where, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-// Initialize QR code
-const qrCode = document.getElementById('qr-code');
-const copyLinkButton = document.getElementById('copy-link-button');
-const phoneList = document.getElementById('phone-list');
-const totalRegistrations = document.getElementById('total-registrations');
-const todayRegistrations = document.getElementById('today-registrations');
-const activeUsers = document.getElementById('active-users');
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCch3wlj9ft1psd8yEypdNA33C-7qCI4e0",
+  authDomain: "test-a382b.firebaseapp.com",
+  projectId: "test-a382b",
+  storageBucket: "test-a382b.firebasestorage.app",
+  messagingSenderId: "763775183510",
+  appId: "1:763775183510:web:110e3b3a6c1c66ef6270b7",
+  measurementId: "G-9N3C5LP43H"
+};
 
-// Generate registration link and QR code
-const registrationLink = `${window.location.origin}/register-phone.html?shop=Coffee123`;
-QRCode.toCanvas(qrCode, registrationLink, {
-    width: 200,
-    margin: 1,
-    color: {
-        dark: '#000000',
-        light: '#ffffff'
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', () => {
+    debug('DOM fully loaded, initializing dashboard...');
+    
+    // Initialize elements
+    const totalRegistrations = document.getElementById('totalRegistrations');
+    const logoutButton = document.getElementById('logoutBtn');
+    const sendSmsButton = document.getElementById('smsForm');
+    
+    // Check authentication state
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            debugInfo('User is signed in', user);
+            await loadDashboardData(user);
+        } else {
+            debugError('No user signed in');
+            window.location.href = 'coffee-shop-login.html';
+        }
+    });
+    
+    // Handle logout
+    if (logoutButton) {
+        logoutButton.addEventListener('click', async () => {
+            try {
+                await auth.signOut();
+                debugInfo('User logged out successfully');
+                window.location.href = 'coffee-shop-login.html';
+            } catch (error) {
+                debugError('Error logging out:', error);
+                alert('Error logging out. Please try again.');
+            }
+        });
+    } else {
+        debugError('Logout button not found in the DOM');
+    }
+    
+    // Handle SMS form submission
+    if (sendSmsButton) {
+        sendSmsButton.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const messageInput = document.getElementById('message');
+            
+            if (!messageInput) return;
+            
+            const message = messageInput.value.trim();
+            
+            if (!message) {
+                alert('Please enter a message to send');
+                return;
+            }
+            
+            try {
+                debug('Preparing to send SMS message');
+                debugInfo('Message:', message);
+                
+                // Disable the submit button while processing
+                const submitButton = sendSmsButton.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+                
+                // Get all phone numbers for this shop
+                const shopId = 'Coffee123'; // This should be replaced with actual shop ID
+                const phonesRef = collection(db, 'phone_numbers');
+                const phoneQuery = query(
+                    phonesRef,
+                    where('shop_id', '==', shopId)
+                );
+                
+                const phoneSnapshot = await getDocs(phoneQuery);
+                const phoneNumbers = phoneSnapshot.docs.map(doc => formatPhoneNumber(doc.data().phone_number));
+                
+                if (phoneNumbers.length === 0) {
+                    alert('No registered phone numbers found for this shop.');
+                    return;
+                }
+                
+                // Send SMS through our API endpoint
+                const response = await fetch('http://localhost:3000/api/send-sms', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message,
+                        phoneNumbers
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to send SMS messages');
+                }
+                
+                const result = await response.json();
+                
+                // Check for any failed messages
+                const failedMessages = result.results.filter(r => r.status === 'error');
+                if (failedMessages.length > 0) {
+                    debugWarn('Some messages failed to send:', failedMessages);
+                    alert(`Warning: ${failedMessages.length} messages failed to send. Check the console for details.`);
+                } else {
+                    debugInfo('All SMS messages sent successfully');
+                    alert('All messages sent successfully!');
+                }
+                
+                // Clear the form
+                messageInput.value = '';
+                
+            } catch (error) {
+                debugError('Error sending SMS message:', error);
+                alert('Error sending message. Please try again.');
+            } finally {
+                // Re-enable the submit button
+                const submitButton = sendSmsButton.querySelector('button[type="submit"]');
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-paper-plane"></i> Send SMS to All';
+            }
+        });
     }
 });
 
-// Copy registration link
-copyLinkButton.addEventListener('click', () => {
-    navigator.clipboard.writeText(registrationLink)
-        .then(() => {
-            debugInfo('Registration link copied to clipboard');
-            copyLinkButton.textContent = 'Copied!';
-            setTimeout(() => {
-                copyLinkButton.textContent = 'Copy Registration Link';
-            }, 2000);
-        })
-        .catch(err => {
-            debugError('Failed to copy registration link', err);
-        });
-});
-
-// Load phone numbers
-async function loadPhoneNumbers() {
+async function loadDashboardData(user) {
     try {
-        debug('Loading phone numbers...');
-        
-        // Get the current user's shop ID
-        const user = auth.currentUser;
-        if (!user) {
-            debugError('No user logged in');
-            return;
-        }
-        
-        // Get the shop ID from the user's data
+        // Get shop ID from coffee_shops collection
         const shopsRef = collection(db, 'coffee_shops');
         const shopQuery = query(shopsRef, where('userId', '==', user.uid));
         const shopSnapshot = await getDocs(shopQuery);
         
         if (shopSnapshot.empty) {
-            debugError('No shop found for user');
-            return;
+            debugError('No coffee shop found for this user');
+            throw new Error('No coffee shop found for this user');
         }
         
-        const shopData = shopSnapshot.docs[0].data();
-        const shopId = shopData.id || 'Coffee123'; // Use the shop ID or default to Coffee123
-        
-        debugInfo('Shop ID:', shopId);
-        
-        // Query phone numbers for this shop
+        const shopDoc = shopSnapshot.docs[0];
+        const shopId = shopDoc.id; // The document ID is the shop ID
+        debugInfo('Retrieved shop ID:', shopId);
+
+        // Load phone numbers count
+        debug('Loading phone numbers count from Firebase...');
         const phonesRef = collection(db, 'phone_numbers');
         const phoneQuery = query(
-            phonesRef, 
-            where('shop_id', '==', shopId),
-            orderBy('created_at', 'desc')
+            phonesRef,
+            where('shop_id', '==', shopId)
+        );
+
+        const phoneSnapshot = await getDocs(phoneQuery);
+        const totalCount = phoneSnapshot.size;
+
+        // Update total registrations count
+        const totalRegistrationsElement = document.getElementById('totalRegistrations');
+        if (totalRegistrationsElement) {
+            totalRegistrationsElement.textContent = totalCount;
+        }
+
+        // Update user profile
+        updateUserProfile(user);
+
+        debugInfo(`Loaded ${totalCount} total registrations`);
+
+    } catch (error) {
+        debugError('Error loading dashboard data:', error);
+        alert('Error loading dashboard data. Please try again.');
+    }
+}
+
+function updateUserProfile(user) {
+    const userNameElement = document.querySelector('.user-name');
+    if (userNameElement) {
+        userNameElement.textContent = user.displayName || 'Coffee Shop';
+    }
+}
+
+// Helper function to get phone numbers based on recipient groups
+async function getPhoneNumbersForRecipients(recipientGroups) {
+    try {
+        const shopId = 'Coffee123'; // This should be replaced with actual shop ID from user profile
+        const phonesRef = collection(db, 'phone_numbers');
+        const phoneQuery = query(
+            phonesRef,
+            where('shop_id', '==', shopId)
         );
         
         const phoneSnapshot = await getDocs(phoneQuery);
-        const phones = phoneSnapshot.docs.map(doc => ({
+        const allPhones = phoneSnapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
         }));
         
-        debugInfo('Phone numbers loaded:', phones);
-
-        // Update statistics
-        totalRegistrations.textContent = phones.length;
-        const today = new Date().toISOString().split('T')[0];
-        const todayPhones = phones.filter(phone => {
-            const phoneDate = phone.created_at.toDate().toISOString().split('T')[0];
-            return phoneDate === today;
-        });
-        todayRegistrations.textContent = todayPhones.length;
-        activeUsers.textContent = phones.filter(phone => phone.active !== false).length;
-
-        // Display phone numbers
-        phoneList.innerHTML = phones.map(phone => `
-            <div class="phone-item">
-                <div class="phone-number">${phone.phone_number}</div>
-                <div class="phone-date">${phone.created_at.toDate().toLocaleDateString()}</div>
-                <div class="phone-status ${phone.active !== false ? 'active' : 'inactive'}">
-                    ${phone.active !== false ? 'Active' : 'Inactive'}
-                </div>
-            </div>
-        `).join('');
-
-        debugInfo(`Loaded ${phones.length} phone numbers`);
+        // Filter phones based on recipient groups
+        let selectedPhones = [];
+        for (const group of recipientGroups) {
+            switch (group) {
+                case 'all':
+                    selectedPhones = allPhones.map(p => formatPhoneNumber(p.phone_number));
+                    break;
+                case 'active':
+                    selectedPhones = allPhones
+                        .filter(p => p.active !== false)
+                        .map(p => formatPhoneNumber(p.phone_number));
+                    break;
+                case 'today':
+                    const today = new Date().toISOString().split('T')[0];
+                    selectedPhones = allPhones
+                        .filter(p => {
+                            if (!p.created_at) return false;
+                            const phoneDate = p.created_at.toDate().toISOString().split('T')[0];
+                            return phoneDate === today;
+                        })
+                        .map(p => formatPhoneNumber(p.phone_number));
+                    break;
+            }
+        }
+        
+        // Remove duplicates and ensure we have at least one phone number
+        selectedPhones = [...new Set(selectedPhones)];
+        if (selectedPhones.length === 0) {
+            // For testing, add the provided phone number
+            selectedPhones = ['+33766633413'];
+        }
+        
+        debugInfo('Selected phone numbers:', selectedPhones);
+        return selectedPhones;
     } catch (error) {
-        debugError('Error loading phone numbers', error);
+        debugError('Error getting phone numbers:', error);
+        throw error;
     }
 }
 
-// Check authentication state
-auth.onAuthStateChanged(user => {
-    if (user) {
-        debug('User is signed in', user);
-        document.querySelector('.user-name').textContent = user.displayName || 'Coffee Shop';
-        if (user.photoURL) {
-            document.querySelector('.user-avatar img').src = user.photoURL;
-        }
-        loadPhoneNumbers();
-    } else {
-        debugWarn('No user is signed in');
-        window.location.href = 'coffee-shop-login.html';
+// Helper function to format phone numbers for Twilio
+function formatPhoneNumber(phone) {
+    if (!phone) return null;
+    
+    // If the number already starts with +, return as is
+    if (phone.startsWith('+')) {
+        return phone;
     }
-});
-
-// Handle logout
-document.querySelector('.user-profile').addEventListener('click', () => {
-    auth.signOut()
-        .then(() => {
-            debug('User signed out');
-            window.location.href = 'coffee-shop-login.html';
-        })
-        .catch(error => {
-            debugError('Error signing out', error);
-        });
-}); 
+    
+    // Remove any non-digit characters
+    let cleaned = phone.replace(/\D/g, '');
+    
+    // If the number starts with country code
+    if (cleaned.startsWith('41')) {
+        return '+' + cleaned;
+    }
+    if (cleaned.startsWith('33')) {
+        return '+' + cleaned;
+    }
+    
+    // For numbers starting with 0
+    if (cleaned.startsWith('0')) {
+        // Swiss mobile numbers (07x, 08x, 09x)
+        if (cleaned.match(/^0[7-9]/)) {
+            return '+41' + cleaned.substring(1);
+        }
+        // French mobile numbers (06x, 07x)
+        if (cleaned.match(/^0[6-7]/)) {
+            return '+33' + cleaned.substring(1);
+        }
+        // Default to Swiss for other 0-prefixed numbers
+        return '+41' + cleaned.substring(1);
+    }
+    
+    // If it's just digits, assume Swiss number
+    return '+41' + cleaned;
+} 

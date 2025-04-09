@@ -8,113 +8,269 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
-<body>
+<body class="coffee-theme">
     <header class="hero">
         <nav class="navbar">
-            <div class="logo">Sendo Swiss</div>
-            <div class="nav-links">
-                <a href="index.html" class="active">Home</a>
-                <a href="register.html">Register</a>
-                <a href="coffee-shop-login.html">Login</a>
+            <div class="container">
+                <a href="/" class="logo">
+                    <img src="assets/images/Sendo_logo.svg" alt="Sendo Swiss Logo" class="logo-img">
+                </a>
+                <div class="nav-links">
+                    <a href="/" class="active">Home</a>
+                    <a href="/register.html">Register</a>
+                    <a href="/login.html">Login</a>
+                </div>
             </div>
         </nav>
         <div class="hero-content">
-            <h1>Turn walk-ins into regulars, effortlessly</h1>
-            <p class="subheadline">Sendo Swiss helps cafés, bars and restaurants increase customer loyalty with a simple QR code and SMS offers – no app needed.</p>
-            <div class="cta-buttons">
-                <a href="register-phone.html" class="cta-button">Register Your Phone</a>
-                <a href="register.html" class="cta-button secondary">Register as Business</a>
+            <div class="hero-text">
+                <h1>Turn Walk-ins into Regulars, Effortlessly</h1>
+                <p class="subheadline">Sendo Swiss helps cafés, bars and restaurants increase customer loyalty with a simple QR code and SMS offers – no app needed.</p>
+                <div class="cta-buttons">
+                    <a href="coffee-shop-register.html" class="cta-button">
+                        <i class="fas fa-store"></i>
+                        Register Your Business
+                    </a>
+                    <a href="#how-it-works" class="cta-button secondary">
+                        <i class="fas fa-info-circle"></i>
+                        Learn More
+                    </a>
+                </div>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">500+</span>
+                    <span class="stat-label">Active Venues</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">50k+</span>
+                    <span class="stat-label">Happy Customers</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">98%</span>
+                    <span class="stat-label">Customer Satisfaction</span>
+                </div>
             </div>
         </div>
     </header>
 
     <section id="how-it-works" class="steps">
-        <h2>How It Works</h2>
-        <div class="steps-container">
-            <div class="step">
-                <div class="step-number">1</div>
-                <h3>We install a branded QR code in your venue</h3>
-                <p>Customers scan it and leave their phone number in seconds</p>
-            </div>
-            <div class="step">
-                <div class="step-number">2</div>
-                <h3>Access your Sendo portal</h3>
-                <p>Easily send SMS offers to your loyal customers during quiet hours</p>
-            </div>
-            <div class="step">
-                <div class="step-number">3</div>
-                <h3>Watch your regulars come back</h3>
-                <p>Increase retention and drive predictable revenue without effort</p>
+        <div class="container">
+            <h2><i class="fas fa-magic"></i> How It Works</h2>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-icon">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <div class="step-number">1</div>
+                    <h3>Quick Setup</h3>
+                    <p>We install a branded QR code in your venue that customers can scan in seconds</p>
+                </div>
+                <div class="step">
+                    <div class="step-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div class="step-number">2</div>
+                    <h3>Easy Collection</h3>
+                    <p>Customers scan and register their phone number with one tap - no app needed</p>
+                </div>
+                <div class="step">
+                    <div class="step-icon">
+                        <i class="fas fa-paper-plane"></i>
+                    </div>
+                    <div class="step-number">3</div>
+                    <h3>Engage & Grow</h3>
+                    <p>Send targeted SMS offers to bring customers back during quiet hours</p>
+                </div>
             </div>
         </div>
     </section>
 
     <section id="benefits" class="benefits">
-        <h2>Why Choose Sendo Swiss</h2>
-        <div class="benefits-grid">
-            <div class="benefit">
-                <h3>No app or loyalty card needed</h3>
-                <p>Simple QR code scanning is all your customers need to do</p>
-            </div>
-            <div class="benefit">
-                <h3>Instant setup</h3>
-                <p>Be live in 15 minutes with our quick onboarding process</p>
-            </div>
-            <div class="benefit">
-                <h3>100% GDPR-compliant</h3>
-                <p>Your customers' data is always protected</p>
-            </div>
-            <div class="benefit">
-                <h3>Swiss quality & reliability</h3>
-                <p>Built with precision and attention to detail</p>
-            </div>
-            <div class="benefit">
-                <h3>Optimised for small venues</h3>
-                <p>Perfect for independent hospitality businesses</p>
+        <div class="container">
+            <h2><i class="fas fa-star"></i> Why Choose Sendo Swiss</h2>
+            <div class="benefits-grid">
+                <div class="benefit">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>No App Required</h3>
+                    <p>Simple QR code scanning and SMS - works on any phone</p>
+                </div>
+                <div class="benefit">
+                    <i class="fas fa-bolt"></i>
+                    <h3>15-Minute Setup</h3>
+                    <p>Quick onboarding process gets you up and running fast</p>
+                </div>
+                <div class="benefit">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>GDPR Compliant</h3>
+                    <p>Swiss-quality data protection and privacy standards</p>
+                </div>
+                <div class="benefit">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Proven Results</h3>
+                    <p>20% average increase in repeat visits</p>
+                </div>
+                <div class="benefit">
+                    <i class="fas fa-store"></i>
+                    <h3>Perfect for SMEs</h3>
+                    <p>Tailored for cafes, bars, and restaurants</p>
+                </div>
+                <div class="benefit">
+                    <i class="fas fa-headset"></i>
+                    <h3>Local Support</h3>
+                    <p>Swiss-based customer service team</p>
+                </div>
             </div>
         </div>
     </section>
 
     <section id="testimonials" class="testimonials">
-        <h2>Success Stories</h2>
-        <div class="testimonial">
-            <blockquote>
-                "We saw a 20% increase in weekday visits in the first month using Sendo Swiss."
-            </blockquote>
-            <cite>– Café Owner, Lausanne</cite>
+        <div class="container">
+            <h2><i class="fas fa-quote-left"></i> Success Stories</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial">
+                    <div class="testimonial-content">
+                        <blockquote>
+                            "We saw a 20% increase in weekday visits within the first month. The system is incredibly easy to use and our customers love getting our special offers."
+                        </blockquote>
+                        <div class="testimonial-info">
+                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Sarah" class="testimonial-avatar">
+                            <div class="testimonial-meta">
+                                <cite>Sarah Mueller</cite>
+                                <span>Café Owner, Lausanne</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial">
+                    <div class="testimonial-content">
+                        <blockquote>
+                            "The SMS campaigns have been a game-changer for our quiet afternoon hours. Setup was quick and the support team is always helpful."
+                        </blockquote>
+                        <div class="testimonial-info">
+                            <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Thomas" class="testimonial-avatar">
+                            <div class="testimonial-meta">
+                                <cite>Thomas Weber</cite>
+                                <span>Restaurant Manager, Zürich</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <h2><i class="fas fa-tag"></i> Simple Pricing</h2>
+            <div class="pricing-grid">
+                <div class="pricing-card starter">
+                    <div class="pricing-header">
+                        <h3>Starter</h3>
+                        <div class="price">
+                            <span class="currency">CHF</span>
+                            <span class="amount">49</span>
+                            <span class="period">/month</span>
+                        </div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> Up to 500 SMS/month</li>
+                        <li><i class="fas fa-check"></i> Basic Analytics</li>
+                        <li><i class="fas fa-check"></i> Email Support</li>
+                        <li><i class="fas fa-check"></i> Single Location</li>
+                    </ul>
+                    <a href="coffee-shop-register.html" class="cta-button">Get Started</a>
+                </div>
+                <div class="pricing-card professional">
+                    <div class="popular-tag">Most Popular</div>
+                    <div class="pricing-header">
+                        <h3>Professional</h3>
+                        <div class="price">
+                            <span class="currency">CHF</span>
+                            <span class="amount">99</span>
+                            <span class="period">/month</span>
+                        </div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> Up to 2000 SMS/month</li>
+                        <li><i class="fas fa-check"></i> Advanced Analytics</li>
+                        <li><i class="fas fa-check"></i> Priority Support</li>
+                        <li><i class="fas fa-check"></i> Multiple Locations</li>
+                        <li><i class="fas fa-check"></i> Custom Templates</li>
+                    </ul>
+                    <a href="coffee-shop-register.html" class="cta-button">Get Started</a>
+                </div>
+            </div>
         </div>
     </section>
 
     <section id="contact" class="cta-section">
-        <h2>Ready to turn your foot traffic into loyal regulars?</h2>
-        <div class="cta-buttons">
-            <button class="cta-button primary">Book a Demo</button>
-            <button class="cta-button secondary">Try for Free</button>
+        <div class="container">
+            <h2><i class="fas fa-envelope"></i> Ready to Grow Your Business?</h2>
+            <p class="cta-description">Join hundreds of successful venues already using Sendo Swiss</p>
+            <div class="cta-buttons">
+                <a href="coffee-shop-register.html" class="cta-button">
+                    <i class="fas fa-rocket"></i>
+                    Start Free Trial
+                </a>
+                <a href="#" class="cta-button secondary" id="scheduleDemo">
+                    <i class="fas fa-calendar"></i>
+                    Schedule Demo
+                </a>
+            </div>
         </div>
     </section>
 
     <footer>
-        <div class="footer-content">
-            <div class="footer-logo">Sendo Swiss</div>
-            <div class="footer-links">
-                <a href="#how-it-works">How It Works</a>
-                <a href="#benefits">Benefits</a>
-                <a href="#testimonials">Testimonials</a>
-                <a href="#contact">Contact</a>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <img src="assets/images/Sendo_logo.svg" alt="Sendo Swiss Logo" class="logo-img">
+                    </div>
+                    <p>Connecting businesses with customers through seamless SMS solutions.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Product</h4>
+                        <a href="#how-it-works">How It Works</a>
+                        <a href="#benefits">Benefits</a>
+                        <a href="#pricing">Pricing</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Company</h4>
+                        <a href="#about">About Us</a>
+                        <a href="#testimonials">Success Stories</a>
+                        <a href="#contact">Contact</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Legal</h4>
+                        <a href="#privacy">Privacy Policy</a>
+                        <a href="#terms">Terms of Service</a>
+                        <a href="#gdpr">GDPR</a>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 Sendo Swiss. All rights reserved.</p>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Sendo Swiss. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
         </div>
     </footer>
 
-    <script type="module" src="js/supabase.js"></script>
     <script type="module" src="js/handle-invite.js"></script>
-    <script type="module" src="script.js"></script>
+    <script type="module" src="js/debug.js"></script>
+    <script type="module" src="js/firebase.js"></script>
+    <script type="module" src="js/script.js"></script>
 </body>
 </html> 

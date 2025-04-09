@@ -1,47 +1,46 @@
-import { supabase } from './supabase.js';
-import debug from './debug.js';
+import { debug, debugError, debugInfo } from './debug.js';
+import { auth } from './firebase-config.js';
 
-debug.info('Accept invite script loaded');
+debug('Accept invite script loaded');
 
-// Check if we have an access token
-const access_token = localStorage.getItem('access_token');
-if (!access_token) {
-    debug.warn('No access token found, redirecting to login');
-    window.location.href = '/login.html';
-}
-
-// Handle form submission
-const form = document.getElementById('accept-invite-form');
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    debug.info('Form submitted');
-
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirm-password').value;
-
-    if (password !== confirmPassword) {
-        debug.warn('Passwords do not match');
-        alert('Passwords do not match');
+document.addEventListener('DOMContentLoaded', async () => {
+    const token = localStorage.getItem('access_token');
+    const messageDiv = document.getElementById('message');
+    
+    if (!token) {
+        debugError('No access token found');
+        if (messageDiv) {
+            messageDiv.textContent = 'No invitation token found. Please use a valid invitation link.';
+            messageDiv.className = 'error';
+        }
         return;
     }
-
+    
     try {
-        debug.info('Updating user password');
-        const { error } = await supabase.auth.updateUser({
-            password: password
-        });
-
-        if (error) {
-            debug.error('Error updating password:', error);
-            alert(error.message);
-            return;
+        debugInfo('Processing invitation with token');
+        
+        // Verify the token with Firebase
+        const userCredential = await auth.signInWithCustomToken(token);
+        debugInfo('User authenticated with custom token');
+        
+        // Update user profile or perform other actions
+        // This would depend on your specific requirements
+        
+        if (messageDiv) {
+            messageDiv.textContent = 'Invitation accepted successfully!';
+            messageDiv.className = 'success';
         }
-
-        debug.info('Password updated successfully');
-        alert('Password set successfully! You can now log in.');
-        window.location.href = '/login.html';
+        
+        // Redirect to dashboard after a short delay
+        setTimeout(() => {
+            window.location.href = '/dashboard.html';
+        }, 2000);
+        
     } catch (error) {
-        debug.error('Unexpected error:', error);
-        alert('An unexpected error occurred. Please try again.');
+        debugError('Error processing invitation', error);
+        if (messageDiv) {
+            messageDiv.textContent = 'Error processing invitation. Please try again or contact support.';
+            messageDiv.className = 'error';
+        }
     }
 }); 

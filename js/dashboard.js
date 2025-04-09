@@ -1,37 +1,42 @@
-import { supabase } from './supabase.js';
-import debug from './debug.js';
+import { debug, debugError, debugInfo } from './debug.js';
+import { auth } from './firebase-config.js';
 
-debug.info('Dashboard script loaded');
+debug('Dashboard script loaded');
 
-// Check if user is logged in
-const { data: { session } } = await supabase.auth.getSession();
-if (!session) {
-    debug.warn('No active session found, redirecting to login');
-    window.location.href = '/login.html';
-}
-
-// Set user email and avatar
-const userEmail = session.user.email;
-debug.info('Setting user email:', userEmail);
-document.getElementById('user-email').textContent = userEmail;
-document.getElementById('user-avatar').textContent = userEmail[0].toUpperCase();
-
-// Handle logout
-const logoutButton = document.getElementById('logout-button');
-logoutButton.addEventListener('click', async () => {
-    debug.info('Logout initiated');
-    try {
-        const { error } = await supabase.auth.signOut();
-        if (error) {
-            debug.error('Logout error:', error);
-            alert('Error logging out. Please try again.');
-            return;
+document.addEventListener('DOMContentLoaded', async () => {
+    // Check if user is logged in
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            debugInfo('User is logged in', user);
+            
+            // Display user email
+            const userEmailElement = document.getElementById('userEmail');
+            if (userEmailElement) {
+                userEmailElement.textContent = user.email;
+            }
+            
+            // Load user data or perform other actions
+            // This would depend on your specific requirements
+            
+        } else {
+            debugWarn('No user is logged in, redirecting to login');
+            window.location.href = '/login.html';
         }
-        debug.info('Logout successful');
-        window.location.href = '/login.html';
-    } catch (error) {
-        debug.error('Unexpected error during logout:', error);
-        alert('An unexpected error occurred during logout.');
+    });
+    
+    // Handle logout
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await auth.signOut();
+                debugInfo('User logged out successfully');
+                window.location.href = '/login.html';
+            } catch (error) {
+                debugError('Error logging out', error);
+                alert('Error logging out. Please try again.');
+            }
+        });
     }
 });
 

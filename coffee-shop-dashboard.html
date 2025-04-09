@@ -3,86 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coffee Shop Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
+    <title>Dashboard - Sendo Swiss</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
+<body class="dashboard-body">
     <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>Coffee Shop</h2>
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="logo">
+                <img src="assets/images/Sendo_logo.svg" alt="Sendo Swiss Logo" class="logo-img">
             </div>
-            <nav class="sidebar-nav">
-                <a href="#dashboard" class="sidebar-nav-link active">
-                    <i class="fas fa-home"></i>
-                    Dashboard
-                </a>
-                <a href="#registration" class="sidebar-nav-link">
-                    <i class="fas fa-user-plus"></i>
-                    Registration
-                </a>
-                <a href="#phones" class="sidebar-nav-link">
-                    <i class="fas fa-phone"></i>
-                    Phone Numbers
-                </a>
-                <a href="#settings" class="sidebar-nav-link">
-                    <i class="fas fa-cog"></i>
-                    Settings
-                </a>
-            </nav>
-        </aside>
+            <ul class="nav-links">
+                <li><a href="coffee-shop-dashboard.html" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="coffee-shop-phones.html"><i class="fas fa-phone"></i> Phone Numbers</a></li>
+            </ul>
+        </nav>
 
+        <!-- Main Content -->
         <main class="main-content">
+            <!-- Header -->
             <header class="dashboard-header">
-                <div class="search-bar">
-                    <input type="text" placeholder="Search...">
-                    <i class="fas fa-search"></i>
+                <div class="header-left">
+                    <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+                    <p class="subtitle">Monitor your SMS campaign performance</p>
                 </div>
-                <div class="user-profile">
-                    <div class="user-avatar">
-                        <img src="https://via.placeholder.com/40" alt="User Avatar">
+                <div class="header-right">
+                    <div class="user-profile">
+                        <span class="user-name">Loading...</span>
+                        <button id="logoutBtn" class="btn-logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
                     </div>
-                    <span class="user-name">Coffee Shop</span>
                 </div>
             </header>
 
-            <div class="dashboard-content">
-                <section class="stats-grid">
-                    <div class="stat-card">
-                        <h3>Total Registrations</h3>
-                        <p id="total-registrations">0</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Today's Registrations</h3>
-                        <p id="today-registrations">0</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Active Users</h3>
-                        <p id="active-users">0</p>
-                    </div>
-                </section>
+            <!-- Stats Cards -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <i class="fas fa-users"></i>
+                    <h3>Total Registrations</h3>
+                    <p id="totalRegistrations">0</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-clock"></i>
+                    <h3>Today's Registrations</h3>
+                    <p id="todayRegistrations">0</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-paper-plane"></i>
+                    <h3>SMS Sent</h3>
+                    <p id="totalSms">0</p>
+                </div>
+            </div>
 
-                <section class="registration-section">
-                    <h2>Registration QR Code</h2>
-                    <div class="qr-container">
-                        <canvas id="qr-code"></canvas>
-                    </div>
-                    <button id="copy-link-button" class="btn-primary">Copy Registration Link</button>
-                </section>
-
-                <section class="phone-numbers-section">
-                    <h2>Registered Phone Numbers</h2>
-                    <div id="phone-list" class="phone-list">
-                        <!-- Phone numbers will be loaded here -->
-                    </div>
-                </section>
+            <!-- SMS Form Card -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-envelope"></i> Send SMS to All Registered Numbers</h2>
+                </div>
+                <div class="card-body">
+                    <form id="smsForm">
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" rows="8" required 
+                                    placeholder="Type your message here..."></textarea>
+                            <small class="form-text">Maximum 160 characters</small>
+                        </div>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Send SMS to All</span>
+                        </button>
+                    </form>
+                </div>
             </div>
         </main>
     </div>
 
-    <script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
-    <script type="module" src="js/firebase-config.js"></script>
     <script type="module" src="js/debug.js"></script>
     <script type="module" src="js/coffee-shop-dashboard.js"></script>
 </body>

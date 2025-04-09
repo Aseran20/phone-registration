@@ -1,4 +1,6 @@
 import { auth, db } from './firebase-config.js';
+import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { debug, debugError, debugInfo } from './debug.js';
 
 debug('Login script loaded');
@@ -9,15 +11,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (user) {
             debugInfo('User already logged in, redirecting to dashboard');
             
-            // Check if user is a coffee shop
-            const shopSnapshot = await db.collection('coffee_shops')
-                .where('userId', '==', user.uid)
-                .get();
+            try {
+                // Check if user is a coffee shop
+                const shopQuery = query(
+                    collection(db, 'coffee_shops'),
+                    where('userId', '==', user.uid)
+                );
+                const shopSnapshot = await getDocs(shopQuery);
                 
-            if (!shopSnapshot.empty) {
-                window.location.href = '/coffee-shop-dashboard.html';
-            } else {
-                window.location.href = '/dashboard.html';
+                if (!shopSnapshot.empty) {
+                    window.location.href = '/coffee-shop-dashboard.html';
+                } else {
+                    window.location.href = '/dashboard.html';
+                }
+            } catch (error) {
+                debugError('Error checking user type:', error);
             }
         }
     });
@@ -36,13 +44,15 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 debugInfo('Attempting to sign in');
                 
-                // Sign in with Firebase
-                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                // Sign in with Firebase using the imported method
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 
                 // Check if user is a coffee shop
-                const shopSnapshot = await db.collection('coffee_shops')
-                    .where('userId', '==', userCredential.user.uid)
-                    .get();
+                const shopQuery = query(
+                    collection(db, 'coffee_shops'),
+                    where('userId', '==', userCredential.user.uid)
+                );
+                const shopSnapshot = await getDocs(shopQuery);
                 
                 debugInfo('Login successful');
                 

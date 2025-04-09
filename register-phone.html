@@ -17,35 +17,62 @@
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
     </script>
 </head>
-<body>
+<body class="coffee-theme">
     <nav class="navbar">
         <div class="container">
             <a href="index.html" class="logo">Sendo Swiss</a>
         </div>
     </nav>
 
-    <div class="container">
-        <div id="shop-info">
+    <div class="container registration-container">
+        <div id="shop-info" class="shop-info-card" style="display: none;">
             <!-- Shop information will be loaded here -->
         </div>
 
         <div class="registration-form">
-            <h2>Register Your Phone Number</h2>
+            <h2><i class="fas fa-coffee"></i> Register Your Phone Number</h2>
+            <p class="form-description">Join our coffee community and never miss out on special offers and updates!</p>
+            
             <form id="phoneForm">
                 <div class="form-group">
-                    <label for="phone">Phone Number:</label>
-                    <input type="tel" id="phone" name="phone" required 
-                           placeholder="Enter your phone number">
+                    <label for="phone">Phone Number</label>
+                    <div class="phone-input-container">
+                        <select id="country-code" class="country-code-select">
+                            <option value="+41">Swiss (+41)</option>
+                            <option value="+33">French (+33)</option>
+                        </select>
+                        <input type="tel" id="phone" name="phone" required 
+                               placeholder="791234567" 
+                               pattern="[1-9]\d{7,14}"
+                               title="Please enter your phone number without the country code">
+                    </div>
+                    <small class="form-text">Enter your phone number without the country code (e.g., 791234567)</small>
                 </div>
-                <button type="submit" class="submit-button">Register</button>
+                <button type="submit" class="submit-button"><i class="fas fa-paper-plane"></i> Register</button>
             </form>
         </div>
 
-        <div class="phone-list">
-            <h3>Registered Numbers</h3>
-            <div id="phoneList">
-                <!-- Phone numbers will be loaded here -->
+        <div class="benefits-container">
+            <div class="benefit-card">
+                <i class="fas fa-gift"></i>
+                <h3>Exclusive Offers</h3>
+                <p>Be the first to know about our special deals and seasonal promotions.</p>
             </div>
+            <div class="benefit-card">
+                <i class="fas fa-bell"></i>
+                <h3>Timely Updates</h3>
+                <p>Get notified about new coffee arrivals and limited-time menu items.</p>
+            </div>
+            <div class="benefit-card">
+                <i class="fas fa-star"></i>
+                <h3>VIP Treatment</h3>
+                <p>Receive personalized offers and birthday surprises from your favorite coffee shop.</p>
+            </div>
+        </div>
+
+        <div class="privacy-notice">
+            <i class="fas fa-shield-alt"></i>
+            <p>Your privacy matters! We'll only send you relevant updates about our coffee shop. You can unsubscribe at any time.</p>
         </div>
     </div>
 

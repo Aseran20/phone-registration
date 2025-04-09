@@ -1,4 +1,6 @@
-import { auth } from './firebase-config.js';
+import { auth, db } from './firebase-config.js';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { doc, getDoc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('registerForm');
@@ -32,10 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Attempting to create account with email:', email);
                 
                 // Check if coffee shop ID is already taken
-                const db = firebase.firestore();
-                const shopDoc = await db.collection('coffee_shops').doc(coffeeShopId).get();
+                const shopDocRef = doc(db, 'coffee_shops', coffeeShopId);
+                const shopDoc = await getDoc(shopDocRef);
                 
-                if (shopDoc.exists) {
+                if (shopDoc.exists()) {
                     if (messageDiv) {
                         messageDiv.textContent = 'This Coffee Shop ID is already taken. Please choose another one.';
                         messageDiv.className = 'error';
@@ -44,17 +46,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 
                 // Create user with email and password
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 
                 // Store coffee shop data in Firestore
-                await db.collection('coffee_shops').doc(coffeeShopId).set({
+                await setDoc(shopDocRef, {
                     userId: userCredential.user.uid,
                     email: email,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    shop_id: coffeeShopId, // Store the shop ID in the document for easy reference
+                    createdAt: serverTimestamp()
                 });
                 
                 // Send email verification
-                await userCredential.user.sendEmailVerification();
+                await sendEmailVerification(userCredential.user);
                 
                 console.log('Account created successfully:', userCredential.user);
 
