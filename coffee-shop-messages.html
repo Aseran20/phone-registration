@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phone Numbers - Sendo Swiss</title>
+    <title>Message History - Sendo Swiss</title>
     <link rel="stylesheet" href="css/coffee-shop-dashboard.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,7 +19,7 @@
             <!-- Header -->
             <header class="dashboard-header">
                 <div class="header-left">
-                    <h1 class="page-title">Phone Numbers</h1>
+                    <h1 class="page-title">Message History</h1>
                 </div>
                 <div class="header-right">
                     <div class="user-profile">
@@ -33,10 +33,10 @@
                 </div>
             </header>
 
-            <!-- Phone Numbers Table -->
+            <!-- Message History Table -->
             <div class="content-card">
                 <div class="card-header">
-                    <h2>Registered Numbers</h2>
+                    <h2>Sent Messages</h2>
                     <div class="card-actions">
                         <button id="refreshBtn" class="btn-refresh" title="Refresh list">
                             <i class="fas fa-sync-alt"></i>
@@ -44,17 +44,18 @@
                     </div>
                 </div>
                 <div class="table-container">
-                    <table id="phoneNumbersTable" class="data-table">
+                    <table id="messagesTable" class="data-table">
                         <thead>
                             <tr>
-                                <th><i class="fas fa-phone"></i> Phone Number</th>
-                                <th><i class="fas fa-calendar"></i> Registration Date</th>
+                                <th><i class="fas fa-calendar"></i> Date</th>
+                                <th><i class="fas fa-envelope"></i> Message</th>
+                                <th><i class="fas fa-users"></i> Recipients</th>
                                 <th><i class="fas fa-circle-check"></i> Status</th>
                                 <th><i class="fas fa-cog"></i> Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Phone numbers will be loaded here dynamically -->
+                            <!-- Messages will be loaded here dynamically -->
                         </tbody>
                     </table>
                 </div>
@@ -64,7 +65,7 @@
 
     <!-- Firebase Scripts -->
     <script type="module" src="js/navigation.js"></script>
-    <script type="module" src="js/coffee-shop-phones.js"></script>
+    <script type="module" src="js/coffee-shop-messages.js"></script>
     <script type="module" src="js/debug.js"></script>
 </body>
 </html> 

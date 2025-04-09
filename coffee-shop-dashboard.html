@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Sendo Swiss</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/coffee-shop-dashboard.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,65 +12,57 @@
 </head>
 <body class="dashboard-body">
     <div class="dashboard-container">
-        <!-- Sidebar -->
-        <nav class="sidebar">
-            <div class="logo">
-                <img src="assets/images/Sendo_logo.svg" alt="Sendo Swiss Logo" class="logo-img">
-            </div>
-            <ul class="nav-links">
-                <li><a href="coffee-shop-dashboard.html" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
-                <li><a href="coffee-shop-phones.html"><i class="fas fa-phone"></i> Phone Numbers</a></li>
-            </ul>
-        </nav>
+        <!-- Navigation will be inserted here by navigation.js -->
 
         <!-- Main Content -->
         <main class="main-content">
             <!-- Header -->
             <header class="dashboard-header">
                 <div class="header-left">
-                    <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
-                    <p class="subtitle">Monitor your SMS campaign performance</p>
+                    <h1 class="page-title">Dashboard</h1>
                 </div>
                 <div class="header-right">
                     <div class="user-profile">
-                        <span class="user-name">Loading...</span>
-                        <button id="logoutBtn" class="btn-logout">
+                        <img src="assets/images/default-avatar.svg" alt="Profile" class="profile-image">
+                        <span class="user-name">John Doe</span>
+                        <button class="btn-logout" id="logoutBtn">
                             <i class="fas fa-sign-out-alt"></i>
-                            <span>Logout</span>
+                            Logout
                         </button>
                     </div>
                 </div>
             </header>
 
-            <!-- Stats Cards -->
-            <div class="stats-container">
-                <div class="stat-card">
-                    <i class="fas fa-users"></i>
-                    <h3>Total Registrations</h3>
-                    <p id="totalRegistrations">0</p>
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="fas fa-phone"></i>
+                        <h3>Total Registrations</h3>
+                        <p id="totalRegistrations">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Active Numbers</h3>
+                        <p id="activeNumbers">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-paper-plane"></i>
+                        <h3>SMS Sent</h3>
+                        <p id="smsSent">0</p>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <i class="fas fa-clock"></i>
-                    <h3>Today's Registrations</h3>
-                    <p id="todayRegistrations">0</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-paper-plane"></i>
-                    <h3>SMS Sent</h3>
-                    <p id="totalSms">0</p>
-                </div>
-            </div>
 
-            <!-- SMS Form Card -->
-            <div class="content-card">
-                <div class="card-header">
-                    <h2><i class="fas fa-envelope"></i> Send SMS to All Registered Numbers</h2>
-                </div>
-                <div class="card-body">
-                    <form id="smsForm">
+                <!-- SMS Section -->
+                <div class="sms-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-envelope"></i> Send SMS to All Registered Numbers</h2>
+                    </div>
+                    <form id="smsForm" class="sms-form">
                         <div class="form-group">
                             <label for="message">Message</label>
-                            <textarea id="message" rows="8" required 
+                            <textarea id="message" rows="4" required 
                                     placeholder="Type your message here..."></textarea>
                             <small class="form-text">Maximum 160 characters</small>
                         </div>
@@ -84,6 +76,7 @@
         </main>
     </div>
 
+    <script type="module" src="js/navigation.js"></script>
     <script type="module" src="js/debug.js"></script>
     <script type="module" src="js/coffee-shop-dashboard.js"></script>
 </body>

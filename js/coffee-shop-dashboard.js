@@ -1,6 +1,6 @@
 // Import Firebase modules
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getFirestore, collection, getDocs, query, where, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { getFirestore, collection, getDocs, query, where, doc, getDoc, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { debug, debugError, debugWarn, debugInfo } from './debug.js';
 
@@ -36,7 +36,10 @@ document.addEventListener('DOMContentLoaded', () => {
             await loadDashboardData(user);
         } else {
             debugError('No user signed in');
-            window.location.href = 'coffee-shop-login.html';
+            // Only redirect if we're not already on the login page
+            if (!window.location.pathname.includes('login.html')) {
+                window.location.href = 'login.html';
+            }
         }
     });
     
@@ -46,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 await auth.signOut();
                 debugInfo('User logged out successfully');
-                window.location.href = 'coffee-shop-login.html';
+                window.location.href = 'login.html';
             } catch (error) {
                 debugError('Error logging out:', error);
                 alert('Error logging out. Please try again.');
@@ -80,8 +83,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitButton.disabled = true;
                 submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
                 
+                // Get shop ID
+                const shopsRef = collection(db, 'coffee_shops');
+                const shopQuery = query(shopsRef, where('userId', '==', auth.currentUser.uid));
+                const shopSnapshot = await getDocs(shopQuery);
+                
+                if (shopSnapshot.empty) {
+                    throw new Error('No coffee shop found for this user');
+                }
+                
+                const shopId = shopSnapshot.docs[0].id;
+                debugInfo('Retrieved shop ID:', shopId);
+                
                 // Get all phone numbers for this shop
-                const shopId = 'Coffee123'; // This should be replaced with actual shop ID
                 const phonesRef = collection(db, 'phone_numbers');
                 const phoneQuery = query(
                     phonesRef,
@@ -113,6 +127,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 
                 const result = await response.json();
+                
+                // Store the message in Firebase
+                const messagesRef = collection(db, 'sms_messages');
+                await addDoc(messagesRef, {
+                    shop_id: shopId,
+                    message: message,
+                    phone_numbers: phoneNumbers,
+                    sent_at: serverTimestamp(),
+                    status: result.results.some(r => r.status === 'error') ? 'partial' : 'success',
+                    results: result.results
+                });
                 
                 // Check for any failed messages
                 const failedMessages = result.results.filter(r => r.status === 'error');
@@ -166,17 +191,32 @@ async function loadDashboardData(user) {
 
         const phoneSnapshot = await getDocs(phoneQuery);
         const totalCount = phoneSnapshot.size;
+        
+        // Count active numbers
+        const activeCount = phoneSnapshot.docs.filter(doc => doc.data().active !== false).length;
 
         // Update total registrations count
         const totalRegistrationsElement = document.getElementById('totalRegistrations');
         if (totalRegistrationsElement) {
             totalRegistrationsElement.textContent = totalCount;
         }
+        
+        // Update active numbers count
+        const activeNumbersElement = document.getElementById('activeNumbers');
+        if (activeNumbersElement) {
+            activeNumbersElement.textContent = activeCount;
+        }
+        
+        // Update SMS sent count (placeholder for now)
+        const smsSentElement = document.getElementById('smsSent');
+        if (smsSentElement) {
+            smsSentElement.textContent = '0'; // This would be updated with actual SMS count if available
+        }
 
         // Update user profile
         updateUserProfile(user);
 
-        debugInfo(`Loaded ${totalCount} total registrations`);
+        debugInfo(`Loaded ${totalCount} total registrations, ${activeCount} active numbers`);
 
     } catch (error) {
         debugError('Error loading dashboard data:', error);

@@ -5,12 +5,13 @@ import { debug, debugError, debugWarn, debugInfo } from './debug.js';
 
 // Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyA5gs25OC_p8iNRCKxqLyOHUxvLx9dHgZ0",
-    authDomain: "sendo-swiss.firebaseapp.com",
-    projectId: "sendo-swiss",
-    storageBucket: "sendo-swiss.appspot.com",
-    messagingSenderId: "637146813923",
-    appId: "1:637146813923:web:4a5ef2c1ef4b2a907b4c89"
+    apiKey: "AIzaSyCch3wlj9ft1psd8yEypdNA33C-7qCI4e0",
+    authDomain: "test-a382b.firebaseapp.com",
+    projectId: "test-a382b",
+    storageBucket: "test-a382b.firebasestorage.app",
+    messagingSenderId: "763775183510",
+    appId: "1:763775183510:web:110e3b3a6c1c66ef6270b7",
+    measurementId: "G-9N3C5LP43H"
 };
 
 // Initialize Firebase
@@ -20,7 +21,6 @@ const db = getFirestore(app);
 
 // DOM Elements
 const phoneNumbersTable = document.getElementById('phoneNumbersTable');
-const searchInput = document.getElementById('searchInput');
 const refreshBtn = document.getElementById('refreshBtn');
 const logoutButton = document.getElementById('logoutBtn');
 
@@ -36,7 +36,7 @@ onAuthStateChanged(auth, (user) => {
         updateUserProfile(user);
     } else {
         debugError('No user signed in');
-        window.location.href = 'coffee-shop-login.html';
+        window.location.href = 'login.html';
     }
 });
 
@@ -68,7 +68,7 @@ async function initializeDashboard(user) {
 }
 
 // Load phone numbers
-async function loadPhoneNumbers(searchTerm = '') {
+async function loadPhoneNumbers() {
     if (isLoading) return;
     
     try {
@@ -101,10 +101,8 @@ async function loadPhoneNumbers(searchTerm = '') {
         
         phoneSnapshot.forEach((doc) => {
             const data = doc.data();
-            if (!searchTerm || data.phone_number.includes(searchTerm)) {
-                const row = createTableRow(doc.id, data);
-                tbody.appendChild(row);
-            }
+            const row = createTableRow(doc.id, data);
+            tbody.appendChild(row);
         });
 
         debugInfo(`Loaded ${phoneSnapshot.size} phone numbers`);
@@ -168,7 +166,7 @@ async function togglePhoneNumberStatus(docId, newStatus) {
         await updateDoc(phoneNumberRef, {
             active: newStatus
         });
-        await loadPhoneNumbers(searchInput.value.trim());
+        await loadPhoneNumbers();
         showSuccess(`Phone number ${newStatus ? 'activated' : 'deactivated'} successfully`);
     } catch (error) {
         debugError('Error updating status:', error);
@@ -181,7 +179,7 @@ async function deletePhoneNumber(docId) {
     if (confirm('Are you sure you want to delete this phone number?')) {
         try {
             await deleteDoc(doc(db, 'phone_numbers', docId));
-            await loadPhoneNumbers(searchInput.value.trim());
+            await loadPhoneNumbers();
             showSuccess('Phone number deleted successfully');
         } catch (error) {
             debugError('Error deleting phone number:', error);
@@ -192,18 +190,8 @@ async function deletePhoneNumber(docId) {
 
 // Set up event listeners
 function setupEventListeners() {
-    // Search functionality with debounce
-    let searchTimeout;
-    searchInput.addEventListener('input', () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            loadPhoneNumbers(searchInput.value.trim());
-        }, 300);
-    });
-    
     // Refresh button
     refreshBtn.addEventListener('click', async () => {
-        searchInput.value = '';
         await loadPhoneNumbers();
     });
 }
@@ -244,7 +232,7 @@ logoutButton.addEventListener('click', async () => {
     try {
         await signOut(auth);
         debugInfo('User logged out successfully');
-        window.location.href = 'coffee-shop-login.html';
+        window.location.href = 'login.html';
     } catch (error) {
         debugError('Error signing out:', error);
         showError('Error signing out. Please try again.');
