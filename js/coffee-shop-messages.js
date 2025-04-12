@@ -21,7 +21,7 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 // DOM Elements
-const messagesTable = document.getElementById('messagesTable');
+const messagesTable = document.querySelector('.messages-table');
 const refreshBtn = document.getElementById('refreshBtn');
 const logoutButton = document.getElementById('logoutBtn');
 
@@ -124,7 +124,7 @@ async function loadMessages() {
                 <tr>
                     <td colspan="5" class="no-data">
                         <i class="fas fa-info-circle"></i>
-                        No messages sent yet
+                        Aucun message envoyé pour le moment
                     </td>
                 </tr>
             `;
@@ -218,103 +218,69 @@ function createTableRow(docId, data) {
 
 // Show message details in a modal
 function showMessageDetails(docId, data) {
+    // Get the message details container
+    const messageDetailsContainer = document.getElementById('messageDetailsContainer');
+    
+    // Format the date
     const sentDate = data.sent_at?.toDate() || new Date();
     const formattedDate = sentDate.toLocaleString();
+    
+    // Count recipients
     const recipientCount = data.phone_numbers?.length || 0;
     
-    // Create modal content
-    const modalContent = `
-        <div class="modal-header">
-            <h3>Message Details</h3>
-            <button class="btn-close" id="closeModal">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="modal-body">
-            <div class="detail-group">
-                <label>Date Sent:</label>
-                <p>${formattedDate}</p>
+    // Determine status text
+    let statusText;
+    switch (data.status) {
+        case 'success':
+            statusText = 'Success';
+            break;
+        case 'partial':
+            statusText = 'Partial';
+            break;
+        case 'error':
+            statusText = 'Failed';
+            break;
+        default:
+            statusText = 'Unknown';
+    }
+    
+    // Create message details HTML
+    const messageDetailsHTML = `
+        <div class="message-details-card">
+            <div class="card-header">
+                <h3>Détails du message</h3>
+                <button class="btn-close" id="closeDetailsBtn">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <div class="detail-group">
-                <label>Message:</label>
-                <p class="message-content">${data.message || 'No message content'}</p>
-            </div>
-            <div class="detail-group">
-                <label>Recipients (${recipientCount}):</label>
-                <ul class="recipient-list">
-                    ${(data.phone_numbers || []).map(phone => `<li>${phone}</li>`).join('')}
-                </ul>
-            </div>
-            <div class="detail-group">
-                <label>Status:</label>
-                <p class="status-${data.status || 'unknown'}">${(data.status || 'Unknown').charAt(0).toUpperCase() + (data.status || 'Unknown').slice(1)}</p>
-            </div>
-            ${data.results ? `
-            <div class="detail-group">
-                <label>Results:</label>
-                <div class="results-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Phone Number</th>
-                                <th>Status</th>
-                                <th>Message ID</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${data.results.map(result => `
-                                <tr class="${result.status || 'unknown'}">
-                                    <td>${result.to || 'N/A'}</td>
-                                    <td>${(result.status || 'unknown').charAt(0).toUpperCase() + (result.status || 'unknown').slice(1)}</td>
-                                    <td>${result.messageId || 'N/A'}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
+            <div class="card-body">
+                <div class="detail-row">
+                    <span class="detail-label">Date d'envoi:</span>
+                    <span class="detail-value">${formattedDate}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Message:</span>
+                    <p class="detail-value">${data.message || 'No message content'}</p>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Destinataires:</span>
+                    <span class="detail-value">${recipientCount} recipient${recipientCount !== 1 ? 's' : ''}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Statut:</span>
+                    <span class="detail-value">${statusText}</span>
                 </div>
             </div>
-            ` : ''}
         </div>
     `;
     
-    // Create and show modal
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    modal.innerHTML = `
-        <div class="modal-content">
-            ${modalContent}
-        </div>
-    `;
-    
-    // Add modal to the body
-    document.body.appendChild(modal);
+    // Update the container with the message details
+    messageDetailsContainer.innerHTML = messageDetailsHTML;
     
     // Add event listener to close button
-    const closeButton = modal.querySelector('#closeModal');
-    closeButton.addEventListener('click', () => {
-        document.body.removeChild(modal);
-    });
-    
-    // Close modal when clicking outside
-    modal.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            document.body.removeChild(modal);
-        }
-    });
-    
-    // Prevent scrolling of the body when modal is open
-    document.body.style.overflow = 'hidden';
-    
-    // Re-enable scrolling when modal is closed
-    const reEnableScrolling = () => {
-        document.body.style.overflow = '';
-    };
-    
-    closeButton.addEventListener('click', reEnableScrolling);
-    modal.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            reEnableScrolling();
-        }
+    const closeDetailsBtn = document.getElementById('closeDetailsBtn');
+    closeDetailsBtn.addEventListener('click', () => {
+        messageDetailsContainer.innerHTML = '';
     });
 }
 

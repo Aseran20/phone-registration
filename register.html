@@ -1,77 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register Your Business - Sendo Swiss</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Inscription - Sendo Swiss</title>
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="stylesheet" href="css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body class="coffee-theme">
-    <nav class="navbar">
-        <div class="container">
-            <a href="/" class="logo">
-                <img src="assets/images/Sendo_logo.svg" alt="Sendo Swiss Logo" class="logo-img">
-            </a>
-            <div class="nav-links">
-                <a href="/">Home</a>
-                <a href="/register.html" class="active">Register</a>
-                <a href="/login.html">Login</a>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <a href="/" class="logo">
+                    <img src="assets/images/Sendo_logo.svg" alt="Logo Sendo Swiss" class="logo-img">
+                </a>
+                <div class="nav-right">
+                    <button class="menu-button" aria-label="Menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="nav-links">
+                        <a href="/">Accueil</a>
+                        <a href="/register.html" class="active">Inscription</a>
+                        <a href="/login.html">Connexion</a>
+                    </div>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
     <div class="registration-container">
         <div class="container">
             <div class="registration-grid">
                 <div class="registration-form-container">
                     <div class="form-card">
-                        <h2><i class="fas fa-store"></i> Register Your Business</h2>
-                        <p class="form-description">Join Sendo Swiss and start growing your customer base today!</p>
+                        <h2><i class="fas fa-store"></i> Inscrivez votre établissement</h2>
+                        <p class="form-description">Rejoignez Sendo Swiss et commencez à développer votre clientèle dès aujourd'hui !</p>
                         
                         <form id="registerForm" class="registration-form">
                             <div class="form-group">
-                                <label for="businessName">Business Name</label>
+                                <label for="businessName">Nom de l'établissement</label>
                                 <div class="input-icon-wrapper">
                                     <i class="fas fa-store"></i>
                                     <input type="text" id="businessName" name="businessName" required 
-                                           placeholder="Enter your business name">
+                                           placeholder="Entrez le nom de votre établissement">
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label for="email">Business Email</label>
+                                <label for="email">Email professionnel</label>
                                 <div class="input-icon-wrapper">
                                     <i class="fas fa-envelope"></i>
                                     <input type="email" id="email" name="email" required 
-                                           placeholder="Enter your business email">
+                                           placeholder="Entrez votre email professionnel">
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label for="password">Password</label>
+                                <label for="password">Mot de passe</label>
                                 <div class="input-icon-wrapper">
                                     <i class="fas fa-lock"></i>
                                     <input type="password" id="password" name="password" required 
                                            minlength="8" 
-                                           placeholder="Create a strong password">
+                                           placeholder="Créez un mot de passe fort">
                                 </div>
                                 <div class="password-strength" id="passwordStrength">
                                     <div class="strength-bar"></div>
-                                    <span class="strength-text">Password strength: <span id="strengthText">Weak</span></span>
+                                    <span class="strength-text">Force du mot de passe : <span id="strengthText">Faible</span></span>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label for="confirmPassword">Confirm Password</label>
+                                <label for="confirmPassword">Confirmez le mot de passe</label>
                                 <div class="input-icon-wrapper">
                                     <i class="fas fa-lock"></i>
                                     <input type="password" id="confirmPassword" name="confirmPassword" required 
                                            minlength="8" 
-                                           placeholder="Confirm your password">
+                                           placeholder="Confirmez votre mot de passe">
                                 </div>
                             </div>
 
@@ -79,71 +90,58 @@
                                 <label class="checkbox-container">
                                     <input type="checkbox" required id="terms">
                                     <span class="checkmark"></span>
-                                    I agree to the <a href="/terms.html">Terms of Service</a> and <a href="/privacy.html">Privacy Policy</a>
+                                    J'accepte les <a href="/terms.html">Conditions d'utilisation</a> et la <a href="/privacy.html">Politique de confidentialité</a>
                                 </label>
                             </div>
 
                             <button type="submit" class="submit-button">
                                 <i class="fas fa-user-plus"></i>
-                                Create Account
+                                Créer un compte
                             </button>
 
                             <div id="message" class="message-container"></div>
                         </form>
 
                         <div class="form-footer">
-                            Already have an account? <a href="/login.html">Login here</a>
+                            Vous avez déjà un compte ? <a href="/login.html">Connectez-vous ici</a>
                         </div>
                     </div>
                 </div>
 
                 <div class="registration-benefits">
                     <div class="benefits-card">
-                        <h3><i class="fas fa-rocket"></i> Why Choose Sendo Swiss?</h3>
+                        <h3><i class="fas fa-rocket"></i> Pourquoi choisir Sendo Swiss ?</h3>
                         
                         <div class="benefit-item">
                             <i class="fas fa-qrcode"></i>
                             <div class="benefit-content">
-                                <h4>Simple QR Code System</h4>
-                                <p>Easy customer registration with a single scan - no app required.</p>
+                                <h4>Système QR code simple</h4>
+                                <p>Inscription facile des clients en un seul scan - sans application nécessaire.</p>
                             </div>
                         </div>
 
                         <div class="benefit-item">
                             <i class="fas fa-chart-line"></i>
                             <div class="benefit-content">
-                                <h4>Growth Analytics</h4>
-                                <p>Track customer engagement and campaign performance in real-time.</p>
+                                <h4>Analyses de croissance</h4>
+                                <p>Suivez l'engagement des clients et les performances des campagnes en temps réel.</p>
                             </div>
                         </div>
 
                         <div class="benefit-item">
                             <i class="fas fa-mobile-alt"></i>
                             <div class="benefit-content">
-                                <h4>SMS Marketing</h4>
-                                <p>Send targeted promotions directly to your customers' phones.</p>
+                                <h4>Marketing SMS</h4>
+                                <p>Envoyez des promotions ciblées directement sur les téléphones de vos clients.</p>
                             </div>
                         </div>
 
                         <div class="benefit-item">
                             <i class="fas fa-shield-alt"></i>
                             <div class="benefit-content">
-                                <h4>GDPR Compliant</h4>
-                                <p>Your data and your customers' privacy are protected.</p>
+                                <h4>Conforme RGPD</h4>
+                                <p>Vos données et la confidentialité de vos clients sont protégées.</p>
                             </div>
-                        </div>
-
-                        <div class="testimonial-card">
-                            <blockquote>
-                                "Sendo Swiss has transformed how we connect with our customers. Our promotional campaigns now have a 40% higher response rate!"
-                            </blockquote>
-                            <cite>
-                                <img src="assets/images/avatar-placeholder.jpg" alt="Sarah Manager" class="testimonial-avatar">
-                                <div class="testimonial-info">
-                                    <strong>Sarah Johnson</strong>
-                                    <span>Café Manager, Zurich</span>
-                                </div>
-                            </cite>
                         </div>
                     </div>
                 </div>
@@ -152,6 +150,7 @@
     </div>
 
     <script type="module" src="js/register.js"></script>
+    <script src="js/mobile-menu.js"></script>
     <script>
         // Password strength indicator
         document.getElementById('password').addEventListener('input', function(e) {
@@ -169,16 +168,16 @@
             
             if(strength <= 25) {
                 strengthBar.style.backgroundColor = '#ff4444';
-                strengthText.textContent = 'Weak';
+                strengthText.textContent = 'Faible';
             } else if(strength <= 50) {
                 strengthBar.style.backgroundColor = '#ffbb33';
-                strengthText.textContent = 'Fair';
+                strengthText.textContent = 'Moyen';
             } else if(strength <= 75) {
                 strengthBar.style.backgroundColor = '#00C851';
-                strengthText.textContent = 'Good';
+                strengthText.textContent = 'Bon';
             } else {
                 strengthBar.style.backgroundColor = '#007E33';
-                strengthText.textContent = 'Strong';
+                strengthText.textContent = 'Fort';
             }
         });
     </script>

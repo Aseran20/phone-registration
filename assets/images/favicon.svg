@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Coffee cup body -->
+    <path d="M8 8h16c2.2 0 4 1.8 4 4v4c0 2.2-1.8 4-4 4H8c-2.2 0-4-1.8-4-4v-4c0-2.2 1.8-4 4-4z" fill="#6F4E37"/>
+    <!-- Coffee cup handle -->
+    <path d="M24 12c0 1.1 0.9 2 2 2s2-0.9 2-2-0.9-2-2-2-2 0.9-2 2z" fill="#6F4E37"/>
+    <!-- Coffee surface -->
+    <path d="M10 10h12c1.1 0 2 0.9 2 2v2c0 1.1-0.9 2-2 2H10c-1.1 0-2-0.9-2-2v-2c0-1.1 0.9-2 2-2z" fill="#8B4513"/>
+    <!-- Steam -->
+    <path d="M14 4c0 1.1-0.9 2-2 2s-2-0.9-2-2 0.9-2 2-2 2 0.9 2 2z" fill="#6F4E37"/>
+    <path d="M18 4c0 1.1-0.9 2-2 2s-2-0.9-2-2 0.9-2 2-2 2 0.9 2 2z" fill="#6F4E37"/>
+    <path d="M22 4c0 1.1-0.9 2-2 2s-2-0.9-2-2 0.9-2 2-2 2 0.9 2 2z" fill="#6F4E37"/>
+</svg> 

@@ -24,10 +24,17 @@ const supabaseKey = process.env.SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Initialize Twilio client
+console.log('Loading Twilio credentials...');
+console.log('TWILIO_ACCOUNT_SID:', process.env.TWILIO_ACCOUNT_SID);
+console.log('TWILIO_PHONE_NUMBER:', process.env.TWILIO_PHONE_NUMBER);
+
 const twilioClient = twilio(
     process.env.TWILIO_ACCOUNT_SID,
     process.env.TWILIO_AUTH_TOKEN
 );
+
+// Log the actual client configuration
+console.log('Twilio client initialized with account:', twilioClient.accountSid);
 
 // API endpoint to save phone number
 app.post('/api/save-phone', async (req, res) => {

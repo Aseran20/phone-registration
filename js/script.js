@@ -8,26 +8,34 @@ const phoneForm = document.getElementById('phoneForm');
 const phoneList = document.getElementById('phoneList');
 const shopInfo = document.getElementById('shop-info');
 
-// Get shop info from URL parameters
+// Check if shop ID is provided in the URL
 const urlParams = new URLSearchParams(window.location.search);
 const shopId = urlParams.get('shop');
 
-// Get reference to shop info element
+// Get the shop info element
 const shopInfoElement = document.getElementById('shop-info');
 
+// Check if shop ID is provided
 if (shopId) {
-    // Display shop ID directly without querying Firebase
-    shopInfoElement.innerHTML = `
-        <div class="shop-header">
-            <h3>Coffee Shop: ${shopId}</h3>
-            <p>Welcome to our coffee community!</p>
-        </div>
-    `;
-    shopInfoElement.style.display = 'block';
+    // If shop ID is provided, load shop information
+    if (shopInfoElement) {
+        shopInfoElement.innerHTML = `
+            <div class="shop-header">
+                <h3>Coffee Shop: ${shopId}</h3>
+                <p>Welcome to our coffee community!</p>
+            </div>
+        `;
+        shopInfoElement.style.display = 'block';
+    }
+    
+    // Load shop information
+    loadShopInfo(shopId);
 } else {
     // If no shop ID, show error message
-    shopInfoElement.innerHTML = '<div class="error">No shop ID provided. Please use a valid registration link.</div>';
-    shopInfoElement.style.display = 'block';
+    if (shopInfoElement) {
+        shopInfoElement.innerHTML = '<div class="error">No shop ID provided. Please use a valid registration link.</div>';
+        shopInfoElement.style.display = 'block';
+    }
 }
 
 // Load shop information
@@ -37,34 +45,59 @@ async function loadShopInfo(shopId) {
         
         // Query the coffee_shops collection
         const shopsRef = collection(db, 'coffee_shops');
-        const shopQuery = query(shopsRef, where('id', '==', shopId));
+        const shopQuery = query(shopsRef, where('shopId', '==', shopId));
         const shopSnapshot = await getDocs(shopQuery);
         
         if (shopSnapshot.empty) {
-            debugError('Shop not found');
-            if (shopInfo) {
-                shopInfo.innerHTML = '<div class="error">Shop not found. Please use a valid registration link.</div>';
+            // Try querying by businessName as a fallback
+            const nameQuery = query(shopsRef, where('businessName', '==', shopId));
+            const nameSnapshot = await getDocs(nameQuery);
+            
+            if (nameSnapshot.empty) {
+                debugError('Shop not found');
+                if (shopInfo) {
+                    shopInfo.innerHTML = '<div class="error">Établissement non trouvé. Veuillez utiliser un lien d\'inscription valide.</div>';
+                }
+                return;
             }
+            
+            const shopData = nameSnapshot.docs[0].data();
+            debugInfo('Shop data loaded by business name:', shopData);
+            
+            // Update the shop info display
+            if (shopInfo) {
+                shopInfo.innerHTML = `
+                    <div class="shop-header">
+                        <h3><i class="fas fa-store"></i> ${shopData.businessName}</h3>
+                        <p>Rejoignez notre communauté et profitez de nos offres exclusives !</p>
+                    </div>
+                `;
+                shopInfo.style.display = 'block';
+            }
+            
+            // Load phone numbers for this shop
+            loadPhoneNumbers(shopData.shopId);
             return;
         }
         
         const shopData = shopSnapshot.docs[0].data();
-        debugInfo('Shop data loaded:', shopData);
+        debugInfo('Shop data loaded by ID:', shopData);
         
-        // Display shop information
+        // Update the shop info display
         if (shopInfo) {
             shopInfo.innerHTML = `
                 <div class="shop-header">
-                    <h2>${shopData.name || 'Coffee Shop'}</h2>
-                    <p>${shopData.description || 'Welcome to our coffee shop!'}</p>
+                    <h3><i class="fas fa-store"></i> ${shopData.businessName}</h3>
+                    <p>Rejoignez notre communauté et profitez de nos offres exclusives !</p>
                 </div>
             `;
+            shopInfo.style.display = 'block';
         }
         
         // Load phone numbers for this shop
         loadPhoneNumbers(shopId);
     } catch (error) {
-        debugError('Error loading shop information', error);
+        debugError('Error loading shop information:', error);
         if (shopInfo) {
             shopInfo.innerHTML = '<div class="error">Error loading shop information. Please try again later.</div>';
         }
@@ -145,29 +178,10 @@ function isValidPhoneNumber(phone) {
 if (phoneForm) {
     phoneForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        debug('Phone form submitted');
         
         const phoneInput = document.getElementById('phone');
-        const countryCodeSelect = document.getElementById('country-code');
-        const phoneNumber = phoneInput.value.trim();
-        const countryCode = countryCodeSelect.value;
-        
-        if (!phoneNumber) {
-            debugError('Phone number is empty');
-            alert('Please enter a phone number');
-            return;
-        }
-        
-        // Combine country code and phone number
-        const fullPhoneNumber = countryCode + phoneNumber;
-        debugInfo('Full phone number:', fullPhoneNumber);
-        
-        // Validate the full phone number
-        if (!isValidPhoneNumber(fullPhoneNumber)) {
-            debugError('Invalid phone number format');
-            alert('Please enter a valid phone number');
-            return;
-        }
+        const countryCode = document.getElementById('country-code').value;
+        const fullPhoneNumber = countryCode + phoneInput.value;
         
         try {
             debug('Saving phone number to Firestore');
@@ -180,11 +194,22 @@ if (phoneForm) {
                 throw new Error('No shop ID provided');
             }
             
+            // Get the actual shopId from the coffee_shops collection
+            const shopsRef = collection(db, 'coffee_shops');
+            const shopQuery = query(shopsRef, where('businessName', '==', shopId));
+            const shopSnapshot = await getDocs(shopQuery);
+            
+            if (shopSnapshot.empty) {
+                throw new Error('Shop not found');
+            }
+            
+            const actualShopId = shopSnapshot.docs[0].data().shopId;
+            
             // Save to Firestore
             const phonesRef = collection(db, 'phone_numbers');
             await addDoc(phonesRef, {
                 phone_number: fullPhoneNumber,
-                shop_id: shopId,
+                shop_id: actualShopId,
                 created_at: serverTimestamp(),
                 active: true
             });
@@ -196,10 +221,36 @@ if (phoneForm) {
             phoneInput.value = '';
             
             // Reload phone numbers
-            loadPhoneNumbers(shopId);
+            loadPhoneNumbers(actualShopId);
         } catch (error) {
             debugError('Error saving phone number', error);
             alert('Error registering phone number: ' + error.message);
         }
     });
-} 
+}
+
+// Mobile menu functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const menuButton = document.querySelector('.menu-button');
+    const navLinks = document.querySelector('.nav-links');
+
+    if (menuButton && navLinks) {
+        menuButton.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.nav-right') && !event.target.closest('.menu-button')) {
+                navLinks.classList.remove('active');
+            }
+        });
+
+        // Close menu when clicking a link
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+    }
+}); 

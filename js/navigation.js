@@ -72,6 +72,17 @@ function initNavigation() {
     // Get the current page URL
     const currentPage = window.location.pathname.split('/').pop();
     
+    // Only initialize navigation on dashboard pages
+    const dashboardPages = [
+        'coffee-shop-dashboard.html',
+        'coffee-shop-phones.html',
+        'coffee-shop-messages.html'
+    ];
+    
+    if (!dashboardPages.includes(currentPage)) {
+        return; // Don't initialize navigation on non-dashboard pages
+    }
+    
     // Find the dashboard container
     const dashboardContainer = document.querySelector('.dashboard-container');
     
@@ -88,4 +99,30 @@ function initNavigation() {
 document.addEventListener('DOMContentLoaded', initNavigation);
 
 // Export the functions for use in other modules
-export { createNavigation, initNavigation }; 
+export { createNavigation, initNavigation };
+
+// Mobile menu functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const menuButton = document.querySelector('.menu-button');
+    const navLinks = document.querySelector('.nav-links');
+
+    if (menuButton && navLinks) {
+        menuButton.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.nav-right') && !event.target.closest('.menu-button')) {
+                navLinks.classList.remove('active');
+            }
+        });
+
+        // Close menu when clicking a link
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+    }
+}); 

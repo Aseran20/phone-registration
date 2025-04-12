@@ -1,83 +1,72 @@
-# Sendo Swiss - SMS Dashboard
+# Phone Registration System
 
-A web application for managing SMS campaigns and phone number registrations for coffee shops. Built with Node.js, Express, Firebase, and Twilio.
+A web application for coffee shops to register customer phone numbers and send SMS messages to their customers.
 
 ## Features
 
-- User authentication with Firebase
-- Phone number registration and validation
-- SMS campaign management
-- Real-time dashboard statistics
-- Support for both Swiss and French phone numbers
-- Secure SMS sending through Twilio
+- **User Authentication**: Secure login and registration for coffee shop owners
+- **Phone Number Registration**: Collect and store customer phone numbers
+- **Dashboard**: View statistics and manage registered phone numbers
+- **SMS Messaging**: Send messages to all registered customers
+- **Message History**: Track and view sent messages and their delivery status
 
-## Prerequisites
+## Technologies Used
 
-- Node.js (v14 or higher)
-- npm (v6 or higher)
-- Firebase account
-- Twilio account
+- **Frontend**: HTML, CSS, JavaScript
+- **Backend**: Firebase (Authentication, Firestore)
+- **SMS API**: Twilio (for sending SMS messages)
 
-## Installation
+## Setup Instructions
 
 1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/sendo-swiss.git
-cd sendo-swiss
-```
+   ```
+   git clone https://github.com/yourusername/phone-registration.git
+   cd phone-registration
+   ```
 
 2. Install dependencies:
-```bash
-npm install
-```
+   ```
+   npm install
+   ```
 
-3. Create a `.env` file in the root directory with your configuration:
-```env
-TWILIO_ACCOUNT_SID=your_twilio_sid
-TWILIO_AUTH_TOKEN=your_twilio_auth_token
-TWILIO_PHONE_NUMBER=your_twilio_phone_number
-```
+3. Configure Firebase:
+   - Create a Firebase project at [https://console.firebase.google.com/](https://console.firebase.google.com/)
+   - Enable Authentication and Firestore
+   - Update the Firebase configuration in `js/firebase-config.js`
 
-4. Start the development server:
-```bash
-node server.js
-```
+4. Configure SMS API:
+   - Sign up for a Twilio account at [https://www.twilio.com/](https://www.twilio.com/)
+   - Update the SMS API configuration in your backend
 
-The application will be available at `http://localhost:3000`.
+5. Start the development server:
+   ```
+   npm start
+   ```
+
+6. Open the application in your browser:
+   ```
+   http://localhost:3000
+   ```
 
 ## Project Structure
 
-```
-sendo-swiss/
-├── assets/
-│   └── images/
-├── css/
-│   └── styles.css
-├── js/
-│   ├── coffee-shop-dashboard.js
-│   ├── coffee-shop-phones.js
-│   └── debug.js
-├── server.js
-├── coffee-shop-dashboard.html
-├── coffee-shop-phones.html
-└── coffee-shop-login.html
-```
-
-## Usage
-
-1. Register or log in to your coffee shop account
-2. View dashboard statistics
-3. Manage registered phone numbers
-4. Send SMS campaigns to all registered numbers
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+- `index.html`: Landing page
+- `login.html`: User login page
+- `register.html`: User registration page
+- `coffee-shop-dashboard.html`: Dashboard for coffee shop owners
+- `coffee-shop-phones.html`: Phone number management page
+- `coffee-shop-messages.html`: Message history page
+- `css/`: Stylesheets
+- `js/`: JavaScript files
+- `assets/`: Images and other assets
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgements
+
+- Firebase for authentication and database
+- Twilio for SMS messaging
+- Font Awesome for icons
+- Google Fonts for typography 

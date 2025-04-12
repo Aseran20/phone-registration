@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Sendo Swiss</title>
+    <title>Tableau de bord - Sendo Swiss</title>
     <link rel="stylesheet" href="css/coffee-shop-dashboard.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,15 +19,15 @@
             <!-- Header -->
             <header class="dashboard-header">
                 <div class="header-left">
-                    <h1 class="page-title">Dashboard</h1>
+                    <h1 class="page-title">Tableau de bord</h1>
                 </div>
                 <div class="header-right">
                     <div class="user-profile">
-                        <img src="assets/images/default-avatar.svg" alt="Profile" class="profile-image">
+                        <img src="assets/images/default-avatar.svg" alt="Profil" class="profile-image">
                         <span class="user-name">John Doe</span>
                         <button class="btn-logout" id="logoutBtn">
                             <i class="fas fa-sign-out-alt"></i>
-                            Logout
+                            Déconnexion
                         </button>
                     </div>
                 </div>
@@ -38,39 +38,71 @@
                 <!-- Stats Grid -->
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <i class="fas fa-phone"></i>
-                        <h3>Total Registrations</h3>
-                        <p id="totalRegistrations">0</p>
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Inscriptions totales</h3>
+                            <p class="stat-value" id="totalRegistrations">0</p>
+                        </div>
                     </div>
                     <div class="stat-card">
-                        <i class="fas fa-check-circle"></i>
-                        <h3>Active Numbers</h3>
-                        <p id="activeNumbers">0</p>
+                        <div class="stat-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Numéros actifs</h3>
+                            <p class="stat-value" id="activeNumbers">0</p>
+                        </div>
                     </div>
                     <div class="stat-card">
-                        <i class="fas fa-paper-plane"></i>
-                        <h3>SMS Sent</h3>
-                        <p id="smsSent">0</p>
+                        <div class="stat-icon">
+                            <i class="fas fa-paper-plane"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>SMS envoyés</h3>
+                            <p class="stat-value" id="totalMessages">0</p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- SMS Section -->
-                <div class="sms-section">
-                    <div class="section-header">
-                        <h2><i class="fas fa-envelope"></i> Send SMS to All Registered Numbers</h2>
+                <!-- Send SMS Section -->
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2>Envoyer un SMS</h2>
                     </div>
                     <form id="smsForm" class="sms-form">
                         <div class="form-group">
                             <label for="message">Message</label>
-                            <textarea id="message" rows="4" required 
-                                    placeholder="Type your message here..."></textarea>
-                            <small class="form-text">Maximum 160 characters</small>
+                            <textarea id="message" name="message" rows="4" maxlength="160" placeholder="Entrez votre message ici..."></textarea>
+                            <div class="char-counter">0/160 caractères</div>
                         </div>
                         <button type="submit" class="btn-primary">
                             <i class="fas fa-paper-plane"></i>
-                            <span>Send SMS to All</span>
+                            Envoyer
                         </button>
                     </form>
+                </div>
+
+                <!-- Registration Link Section -->
+                <div class="content-card registration-link-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-link"></i> Lien d'inscription</h2>
+                    </div>
+                    <div class="registration-link-content">
+                        <p class="link-description">Partagez ce lien avec vos clients pour qu'ils puissent s'inscrire à votre service de notifications :</p>
+                        <div class="link-container">
+                            <input type="text" id="registrationLink" readonly class="link-input">
+                            <button class="btn-copy" id="copyLinkBtn">
+                                <i class="fas fa-copy"></i>
+                                Copier
+                            </button>
+                        </div>
+                        <div class="link-info">
+                            <i class="fas fa-info-circle"></i>
+                            <p>Ce lien est unique à votre établissement. Les clients qui s'inscriront via ce lien seront automatiquement associés à votre compte.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>

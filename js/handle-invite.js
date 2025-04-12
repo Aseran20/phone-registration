@@ -1,36 +1,63 @@
-import debug from './debug.js';
+import { debug, debugInfo, debugError, debugWarn } from './debug.js';
 
-debug.info('Handle invite script loaded');
+(function handleInvite() {
+    debugInfo('Handle invite script loaded');
 
-// Extract hash from URL
-const hash = window.location.hash.substring(1);
-const params = new URLSearchParams(hash);
-
-debug.info('URL hash:', hash);
-debug.info('Parsed params:', Object.fromEntries(params));
-
-const access_token = params.get('access_token');
-const refresh_token = params.get('refresh_token');
-const type = params.get('type');
-
-debug.info('Access token:', access_token ? 'Present' : 'Not found');
-debug.info('Refresh token:', refresh_token ? 'Present' : 'Not found');
-debug.info('Type:', type);
-
-if (access_token && type === 'invite') {
-    debug.info('Valid invitation token found, processing...');
+    // Extract hash from URL
+    const hash = window.location.hash.substring(1);
     
-    // Store tokens
-    localStorage.setItem('access_token', access_token);
-    if (refresh_token) {
-        localStorage.setItem('refresh_token', refresh_token);
+    // Only process if there's a hash
+    if (!hash) {
+        debugInfo('No hash found in URL, skipping invite processing');
+        return;
     }
-    
-    debug.info('Tokens stored in localStorage');
-    
-    // Redirect to accept-invite page
-    debug.info('Redirecting to accept-invite page');
-    window.location.href = '/accept-invite.html';
-} else {
-    debug.warn('No valid invitation token found');
-} 
+
+    const params = new URLSearchParams(hash);
+
+    debugInfo('URL hash:', hash);
+    debugInfo('Parsed params:', Object.fromEntries(params));
+
+    const access_token = params.get('access_token');
+    const refresh_token = params.get('refresh_token');
+    const type = params.get('type');
+
+    debugInfo('Access token:', access_token ? 'Present' : 'Not found');
+    debugInfo('Refresh token:', refresh_token ? 'Present' : 'Not found');
+    debugInfo('Type:', type);
+
+    // Check if we have an access token
+    if (!access_token) {
+        debugError('No access token found');
+        return;
+    }
+
+    // Check if we have a refresh token
+    if (!refresh_token) {
+        debugError('No refresh token found');
+        return;
+    }
+
+    // Check if we have a type
+    if (!type) {
+        debugError('No type found');
+        return;
+    }
+
+    if (access_token && type === 'invite') {
+        debugInfo('Valid invitation token found, processing...');
+        
+        // Store tokens
+        localStorage.setItem('access_token', access_token);
+        if (refresh_token) {
+            localStorage.setItem('refresh_token', refresh_token);
+        }
+        
+        debugInfo('Tokens stored in localStorage');
+        
+        // Redirect to accept-invite page
+        debugInfo('Redirecting to accept-invite page');
+        window.location.href = '/accept-invite.html';
+    } else {
+        debugWarn('No valid invitation token found');
+    }
+})(); 

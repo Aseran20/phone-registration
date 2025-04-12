@@ -20,6 +20,9 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+// Global variables
+let currentShopId = null;
+
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     debug('DOM fully loaded, initializing dashboard...');
@@ -33,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             debugInfo('User is signed in', user);
-            await loadDashboardData(user);
+            await initializeDashboard(user);
         } else {
             debugError('No user signed in');
             // Only redirect if we're not already on the login page
@@ -163,64 +166,129 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Character counter functionality
+    const messageTextarea = document.getElementById('message');
+    const charCounter = document.querySelector('.char-counter');
+    const MAX_LENGTH = 160;
+
+    if (messageTextarea && charCounter) {
+        messageTextarea.addEventListener('input', () => {
+            const length = messageTextarea.value.length;
+            charCounter.textContent = `${length}/${MAX_LENGTH} caractères`;
+            
+            // Update counter color based on remaining characters
+            charCounter.classList.remove('near-limit', 'at-limit');
+            if (length >= MAX_LENGTH * 0.9) { // 90% of limit
+                charCounter.classList.add('at-limit');
+            } else if (length >= MAX_LENGTH * 0.8) { // 80% of limit
+                charCounter.classList.add('near-limit');
+            }
+        });
+    }
 });
 
-async function loadDashboardData(user) {
+async function initializeDashboard(user) {
     try {
-        // Get shop ID from coffee_shops collection
+        // Get shop ID
         const shopsRef = collection(db, 'coffee_shops');
         const shopQuery = query(shopsRef, where('userId', '==', user.uid));
         const shopSnapshot = await getDocs(shopQuery);
         
         if (shopSnapshot.empty) {
-            debugError('No coffee shop found for this user');
             throw new Error('No coffee shop found for this user');
         }
         
         const shopDoc = shopSnapshot.docs[0];
-        const shopId = shopDoc.id; // The document ID is the shop ID
-        debugInfo('Retrieved shop ID:', shopId);
+        currentShopId = shopDoc.id;
+        const shopData = shopDoc.data();
+        
+        debugInfo('Retrieved shop ID:', currentShopId);
+        
+        // Update user profile with business name
+        const userNameElement = document.querySelector('.user-name');
+        if (userNameElement) {
+            userNameElement.textContent = shopData.businessName;
+        }
+        
+        // Set up registration link
+        setupRegistrationLink(shopData.businessName);
+        
+        // Load dashboard data
+        await loadDashboardData(user);
+        
+    } catch (error) {
+        debugError('Error initializing dashboard:', error);
+        alert('Error loading dashboard. Please try again.');
+    }
+}
 
-        // Load phone numbers count
-        debug('Loading phone numbers count from Firebase...');
+// Set up registration link
+function setupRegistrationLink(businessName) {
+    const registrationLink = document.getElementById('registrationLink');
+    const copyButton = document.getElementById('copyLinkBtn');
+    
+    if (registrationLink && copyButton) {
+        // Create the registration link
+        const baseUrl = window.location.origin;
+        const registrationUrl = `${baseUrl}/register-phone.html?shop=${encodeURIComponent(businessName)}`;
+        
+        // Set the link in the input
+        registrationLink.value = registrationUrl;
+        
+        // Add copy functionality
+        copyButton.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(registrationUrl);
+                copyButton.innerHTML = '<i class="fas fa-check"></i> Copié !';
+                setTimeout(() => {
+                    copyButton.innerHTML = '<i class="fas fa-copy"></i> Copier';
+                }, 2000);
+            } catch (error) {
+                debugError('Error copying to clipboard:', error);
+                alert('Error copying to clipboard. Please try again.');
+            }
+        });
+    }
+}
+
+async function loadDashboardData(user) {
+    try {
+        if (!currentShopId) {
+            throw new Error('Shop ID not initialized');
+        }
+        
+        // Get phone numbers count
         const phonesRef = collection(db, 'phone_numbers');
-        const phoneQuery = query(
-            phonesRef,
-            where('shop_id', '==', shopId)
-        );
-
+        const phoneQuery = query(phonesRef, where('shop_id', '==', currentShopId));
         const phoneSnapshot = await getDocs(phoneQuery);
-        const totalCount = phoneSnapshot.size;
         
-        // Count active numbers
-        const activeCount = phoneSnapshot.docs.filter(doc => doc.data().active !== false).length;
-
-        // Update total registrations count
-        const totalRegistrationsElement = document.getElementById('totalRegistrations');
-        if (totalRegistrationsElement) {
-            totalRegistrationsElement.textContent = totalCount;
+        // Update stats
+        const totalRegistrations = document.getElementById('totalRegistrations');
+        const activeNumbers = document.getElementById('activeNumbers');
+        
+        if (totalRegistrations) {
+            totalRegistrations.textContent = phoneSnapshot.size;
         }
         
-        // Update active numbers count
-        const activeNumbersElement = document.getElementById('activeNumbers');
-        if (activeNumbersElement) {
-            activeNumbersElement.textContent = activeCount;
+        if (activeNumbers) {
+            const activeCount = phoneSnapshot.docs.filter(doc => doc.data().active !== false).length;
+            activeNumbers.textContent = activeCount;
         }
         
-        // Update SMS sent count (placeholder for now)
-        const smsSentElement = document.getElementById('smsSent');
-        if (smsSentElement) {
-            smsSentElement.textContent = '0'; // This would be updated with actual SMS count if available
+        // Get messages count
+        const messagesRef = collection(db, 'sms_messages');
+        const messageQuery = query(messagesRef, where('shop_id', '==', currentShopId));
+        const messageSnapshot = await getDocs(messageQuery);
+        
+        const totalMessages = document.getElementById('totalMessages');
+        if (totalMessages) {
+            totalMessages.textContent = messageSnapshot.size;
         }
-
-        // Update user profile
-        updateUserProfile(user);
-
-        debugInfo(`Loaded ${totalCount} total registrations, ${activeCount} active numbers`);
-
+        
     } catch (error) {
         debugError('Error loading dashboard data:', error);
-        alert('Error loading dashboard data. Please try again.');
+        alert('Error loading dashboard data. Please try refreshing the page.');
     }
 }
 
@@ -291,36 +359,37 @@ async function getPhoneNumbersForRecipients(recipientGroups) {
 function formatPhoneNumber(phone) {
     if (!phone) return null;
     
-    // If the number already starts with +, return as is
-    if (phone.startsWith('+')) {
-        return phone;
-    }
-    
     // Remove any non-digit characters
     let cleaned = phone.replace(/\D/g, '');
     
-    // If the number starts with country code
+    // If the number already starts with +41, ensure it's in the correct format
+    if (phone.startsWith('+41')) {
+        // Ensure it's exactly 12 digits after the +
+        if (phone.length === 12) {
+            return phone;
+        }
+        // If not, clean and reformat
+        cleaned = phone.substring(3).replace(/\D/g, '');
+    }
+    
+    // Handle numbers starting with 41
     if (cleaned.startsWith('41')) {
-        return '+' + cleaned;
-    }
-    if (cleaned.startsWith('33')) {
-        return '+' + cleaned;
+        cleaned = cleaned.substring(2);
     }
     
-    // For numbers starting with 0
+    // Handle numbers starting with 0
     if (cleaned.startsWith('0')) {
-        // Swiss mobile numbers (07x, 08x, 09x)
-        if (cleaned.match(/^0[7-9]/)) {
-            return '+41' + cleaned.substring(1);
-        }
-        // French mobile numbers (06x, 07x)
-        if (cleaned.match(/^0[6-7]/)) {
-            return '+33' + cleaned.substring(1);
-        }
-        // Default to Swiss for other 0-prefixed numbers
-        return '+41' + cleaned.substring(1);
+        cleaned = cleaned.substring(1);
     }
     
-    // If it's just digits, assume Swiss number
+    // For Swiss mobile numbers, ensure they start with 7 and have exactly 9 digits
+    if (cleaned.match(/^7/)) {
+        // Pad with zeros if necessary to ensure 9 digits
+        cleaned = cleaned.padStart(9, '0');
+        return '+41' + cleaned;
+    }
+    
+    // For any other format, assume Swiss and ensure proper length
+    cleaned = cleaned.padStart(9, '0');
     return '+41' + cleaned;
 } 

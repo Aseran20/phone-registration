@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phone Registration</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Inscription Mobile - Sendo Swiss</title>
+    <link rel="stylesheet" href="css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,7 +20,9 @@
 <body class="coffee-theme">
     <nav class="navbar">
         <div class="container">
-            <a href="index.html" class="logo">Sendo Swiss</a>
+            <a href="index.html" class="logo">
+                <img src="assets/images/Sendo_logo.svg" alt="Sendo Swiss Logo" class="logo-img">
+            </a>
         </div>
     </nav>
 
@@ -30,49 +32,52 @@
         </div>
 
         <div class="registration-form">
-            <h2><i class="fas fa-coffee"></i> Register Your Phone Number</h2>
-            <p class="form-description">Join our coffee community and never miss out on special offers and updates!</p>
+            <h2 class="form-title"><i class="fas fa-coffee"></i> Inscrivez votre numéro de téléphone</h2>
             
             <form id="phoneForm">
                 <div class="form-group">
-                    <label for="phone">Phone Number</label>
+                    <label for="phone">Numéro de téléphone</label>
                     <div class="phone-input-container">
                         <select id="country-code" class="country-code-select">
-                            <option value="+41">Swiss (+41)</option>
-                            <option value="+33">French (+33)</option>
+                            <option value="+41">Suisse (+41)</option>
+                            <option value="+33">France (+33)</option>
                         </select>
                         <input type="tel" id="phone" name="phone" required 
                                placeholder="791234567" 
                                pattern="[1-9]\d{7,14}"
-                               title="Please enter your phone number without the country code">
+                               title="Veuillez saisir votre numéro sans l'indicatif du pays">
                     </div>
-                    <small class="form-text">Enter your phone number without the country code (e.g., 791234567)</small>
+                    <small class="form-text">Entrez votre numéro sans l'indicatif du pays (ex: 791234567)</small>
                 </div>
-                <button type="submit" class="submit-button"><i class="fas fa-paper-plane"></i> Register</button>
+
+                <button type="submit" class="submit-button">
+                    <i class="fas fa-paper-plane"></i>
+                    S'inscrire
+                </button>
+
+                <div class="registration-benefits">
+                    <div class="benefits-list">
+                        <div class="benefit-item">
+                            <i class="fas fa-gift"></i>
+                            <h3>Offres Exclusives</h3>
+                            <p>Soyez les premiers à connaître nos offres spéciales et promotions saisonnières.</p>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-bell"></i>
+                            <h3>Mises à jour</h3>
+                            <p>Soyez informé des nouveaux cafés et des articles du menu à durée limitée.</p>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-crown"></i>
+                            <h3>Traitement VIP</h3>
+                            <p>Recevez des offres personnalisées et des surprises d'anniversaire de votre café préféré.</p>
+                        </div>
+                    </div>
+                    <div class="privacy-notice">
+                        <p><i class="fas fa-shield-alt"></i> Votre vie privée est importante ! Nous vous enverrons uniquement des mises à jour pertinentes concernant notre café. Vous pouvez vous désabonner à tout moment.</p>
+                    </div>
+                </div>
             </form>
-        </div>
-
-        <div class="benefits-container">
-            <div class="benefit-card">
-                <i class="fas fa-gift"></i>
-                <h3>Exclusive Offers</h3>
-                <p>Be the first to know about our special deals and seasonal promotions.</p>
-            </div>
-            <div class="benefit-card">
-                <i class="fas fa-bell"></i>
-                <h3>Timely Updates</h3>
-                <p>Get notified about new coffee arrivals and limited-time menu items.</p>
-            </div>
-            <div class="benefit-card">
-                <i class="fas fa-star"></i>
-                <h3>VIP Treatment</h3>
-                <p>Receive personalized offers and birthday surprises from your favorite coffee shop.</p>
-            </div>
-        </div>
-
-        <div class="privacy-notice">
-            <i class="fas fa-shield-alt"></i>
-            <p>Your privacy matters! We'll only send you relevant updates about our coffee shop. You can unsubscribe at any time.</p>
         </div>
     </div>
 

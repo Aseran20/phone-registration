@@ -20,7 +20,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // DOM Elements
-const phoneNumbersTable = document.getElementById('phoneNumbersTable');
+const phoneNumbersTable = document.querySelector('.phones-table');
 const refreshBtn = document.getElementById('refreshBtn');
 const logoutButton = document.getElementById('logoutBtn');
 
@@ -92,7 +92,7 @@ async function loadPhoneNumbers() {
                 <tr>
                     <td colspan="4" class="no-data">
                         <i class="fas fa-info-circle"></i>
-                        No phone numbers registered yet
+                        Aucun numéro de téléphone enregistré pour le moment
                     </td>
                 </tr>
             `;

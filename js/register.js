@@ -1,93 +1,174 @@
 import { auth, db } from './firebase-config.js';
-import { createUserWithEmailAndPassword, sendEmailVerification } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { createUserWithEmailAndPassword, sendEmailVerification, fetchSignInMethodsForEmail, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { doc, getDoc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { debug, debugError } from './debug.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('registerForm');
     const messageDiv = document.getElementById('message');
+    const emailInput = document.getElementById('email');
+    const businessNameInput = document.getElementById('businessName');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+
+    // Function to show error message
+    const showError = (message) => {
+        debugError('Registration error:', message);
+        if (messageDiv) {
+            messageDiv.textContent = message;
+            messageDiv.className = 'message-container error';
+            messageDiv.style.display = 'block';
+        }
+    };
+
+    // Function to show success message
+    const showSuccess = (message) => {
+        debug('Registration success:', message);
+        if (messageDiv) {
+            messageDiv.textContent = message;
+            messageDiv.className = 'message-container success';
+            messageDiv.style.display = 'block';
+        }
+    };
+
+    // Function to validate email format
+    const isValidEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
+    // Function to validate business name
+    const isValidBusinessName = (name) => {
+        return name.length >= 2 && name.length <= 50;
+    };
 
     if (form) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const businessName = document.getElementById('businessName').value;
+            const email = emailInput?.value.trim();
+            const password = passwordInput?.value;
+            const confirmPassword = confirmPasswordInput?.value;
+            const businessName = businessNameInput?.value.trim();
 
             // Clear previous messages
             if (messageDiv) {
                 messageDiv.textContent = '';
                 messageDiv.className = '';
+                messageDiv.style.display = 'none';
+            }
+
+            // Validate all fields are present
+            if (!email || !password || !confirmPassword || !businessName) {
+                showError('Please fill in all fields');
+                return;
+            }
+
+            // Validate email format
+            if (!isValidEmail(email)) {
+                showError('Please enter a valid email address');
+                return;
+            }
+
+            // Validate business name
+            if (!isValidBusinessName(businessName)) {
+                showError('Business name must be between 2 and 50 characters');
+                return;
+            }
+
+            // Validate password length
+            if (password.length < 8) {
+                showError('Password must be at least 8 characters long');
+                return;
             }
 
             // Validate passwords match
             if (password !== confirmPassword) {
-                if (messageDiv) {
-                    messageDiv.textContent = 'Passwords do not match';
-                    messageDiv.className = 'error';
-                }
+                showError('Passwords do not match');
                 return;
             }
 
             try {
+                // Check if email is already in use
+                const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+                if (signInMethods.length > 0) {
+                    showError('This email is already registered. Please use a different email or login.');
+                    return;
+                }
+
                 // Create user with email and password
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
                 
+                // Update user profile first
+                try {
+                    await updateProfile(user, {
+                        displayName: businessName
+                    });
+                    debug('Profile updated successfully');
+                } catch (profileError) {
+                    debugError('Error updating profile:', profileError);
+                }
+                
                 // Send email verification
                 await sendEmailVerification(user);
                 
-                // Create a coffee shop document
+                // Create a coffee shop document with consistent structure
                 const coffeeShopRef = doc(db, 'coffee_shops', user.uid);
                 await setDoc(coffeeShopRef, {
                     userId: user.uid,
                     businessName: businessName,
                     email: email,
                     createdAt: serverTimestamp(),
-                    updatedAt: serverTimestamp()
-                });
-                
-                // Update user profile
-                await user.updateProfile({
-                    displayName: businessName
+                    updatedAt: serverTimestamp(),
+                    active: true,
+                    shopId: user.uid
                 });
                 
                 // Show success message
-                if (messageDiv) {
-                    messageDiv.textContent = 'Registration successful! Please check your email to verify your account.';
-                    messageDiv.className = 'success';
-                }
+                showSuccess('Registration successful! Please check your email to verify your account.');
+                
+                // Disable form inputs
+                emailInput.disabled = true;
+                businessNameInput.disabled = true;
+                passwordInput.disabled = true;
+                confirmPasswordInput.disabled = true;
+                form.querySelector('button[type="submit"]').disabled = true;
                 
                 // Redirect to dashboard after a short delay
                 setTimeout(() => {
-                    window.location.href = 'coffee-shop-dashboard.html';
+                    window.location.href = '/coffee-shop-dashboard.html';
                 }, 3000);
                 
             } catch (error) {
-                console.error('Registration error:', error);
+                debugError('Registration error:', error);
                 
-                // Show error message
-                if (messageDiv) {
-                    let errorMessage = 'Registration failed. Please try again.';
-                    
-                    if (error.code === 'auth/email-already-in-use') {
+                let errorMessage = 'Registration failed. Please try again.';
+                
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
                         errorMessage = 'This email is already registered. Please use a different email or login.';
-                    } else if (error.code === 'auth/weak-password') {
+                        break;
+                    case 'auth/weak-password':
                         errorMessage = 'Password is too weak. Please use a stronger password.';
-                    } else if (error.code === 'auth/invalid-email') {
+                        break;
+                    case 'auth/invalid-email':
                         errorMessage = 'Invalid email address. Please check and try again.';
-                    }
-                    
-                    messageDiv.textContent = errorMessage;
-                    messageDiv.className = 'error';
+                        break;
+                    case 'auth/network-request-failed':
+                        errorMessage = 'Network error. Please check your internet connection and try again.';
+                        break;
+                    case 'auth/too-many-requests':
+                        errorMessage = 'Too many attempts. Please try again later.';
+                        break;
                 }
+                
+                showError(errorMessage);
             }
         });
     }
     
     // Password strength indicator
-    const passwordInput = document.getElementById('password');
     const strengthBar = document.querySelector('.strength-bar');
     const strengthText = document.getElementById('strengthText');
     
@@ -121,7 +202,13 @@ function updateStrengthIndicator(strength, bar, text) {
     const strengthLabels = ['Very Weak', 'Weak', 'Medium', 'Strong', 'Very Strong'];
     const strengthColors = ['#ff4d4d', '#ffa64d', '#ffff4d', '#4dff4d', '#4d4dff'];
     
-    bar.style.width = `${(strength / 5) * 100}%`;
-    bar.style.backgroundColor = strengthColors[strength - 1];
-    text.textContent = strengthLabels[strength - 1];
+    if (strength > 0) {
+        bar.style.width = `${(strength / 5) * 100}%`;
+        bar.style.backgroundColor = strengthColors[strength - 1];
+        text.textContent = strengthLabels[strength - 1];
+    } else {
+        bar.style.width = '0';
+        bar.style.backgroundColor = '#e5e7eb';
+        text.textContent = '';
+    }
 }

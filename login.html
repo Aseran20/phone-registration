@@ -1,34 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sendo Swiss</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Connexion - Sendo Swiss</title>
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="stylesheet" href="css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body class="coffee-theme">
-    <nav class="navbar">
-        <div class="container">
-            <a href="/" class="logo">
-                <img src="assets/images/Sendo_logo.svg" alt="Sendo Swiss Logo" class="logo-img">
-            </a>
-            <div class="nav-links">
-                <a href="/">Home</a>
-                <a href="/register.html">Register</a>
-                <a href="/login.html" class="active">Login</a>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <a href="/" class="logo">
+                    <img src="assets/images/Sendo_logo.svg" alt="Logo Sendo Swiss" class="logo-img">
+                </a>
+                <div class="nav-right">
+                    <button class="menu-button" aria-label="Menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="nav-links">
+                        <a href="/">Accueil</a>
+                        <a href="/register.html">Inscription</a>
+                        <a href="/login.html" class="active">Connexion</a>
+                    </div>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
     <div class="login-container">
         <div class="container">
             <div class="form-card">
-                <h2><i class="fas fa-sign-in-alt"></i> Login to Your Account</h2>
-                <p class="form-description">Welcome back! Please enter your details.</p>
+                <h2><i class="fas fa-sign-in-alt"></i> Connectez-vous à votre compte</h2>
+                <p class="form-description">Bienvenue ! Veuillez saisir vos identifiants.</p>
                 
                 <form id="login-form">
                     <div class="form-group">
@@ -36,16 +47,16 @@
                         <div class="input-icon-wrapper">
                             <i class="fas fa-envelope"></i>
                             <input type="email" id="email" name="email" required 
-                                   placeholder="Enter your email">
+                                   placeholder="Entrez votre email">
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="password">Password</label>
+                        <label for="password">Mot de passe</label>
                         <div class="input-icon-wrapper">
                             <i class="fas fa-lock"></i>
                             <input type="password" id="password" name="password" required 
-                                   placeholder="Enter your password">
+                                   placeholder="Entrez votre mot de passe">
                         </div>
                     </div>
                     
@@ -53,25 +64,26 @@
                         <label class="checkbox-container">
                             <input type="checkbox" id="remember">
                             <span class="checkmark"></span>
-                            Remember me
+                            Se souvenir de moi
                         </label>
                     </div>
                     
                     <button type="submit" class="submit-button">
                         <i class="fas fa-sign-in-alt"></i>
-                        Login
+                        Se connecter
                     </button>
 
                     <div id="message" class="message-container"></div>
                 </form>
 
                 <div class="form-footer">
-                    Don't have an account? <a href="/register.html">Register here</a>
+                    Vous n'avez pas de compte ? <a href="/register.html">Inscrivez-vous ici</a>
                 </div>
             </div>
         </div>
     </div>
 
     <script type="module" src="js/login.js"></script>
+    <script src="js/mobile-menu.js"></script>
 </body>
 </html> 
