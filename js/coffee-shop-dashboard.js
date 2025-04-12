@@ -113,15 +113,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
                 
-                // Send SMS through our API endpoint
-                const response = await fetch('http://localhost:3000/api/send-sms', {
+                // Send SMS via Netlify function
+                const response = await fetch('/.netlify/functions/send-sms', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        message,
-                        phoneNumbers
+                        message: message,
+                        phoneNumbers: phoneNumbers
                     })
                 });
                 
